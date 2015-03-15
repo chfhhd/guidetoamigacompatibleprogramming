@@ -1,0 +1,201 @@
+CHAPITRE 1 : Introduction
+
+"Il existe un problème insurmontable, qui n'a rien à voir avec l'égo de quelqu'un 
+ou des projets commerciaux et industriels. C'est plus simplement lié aux litiges 
+au sein de la communauté. Nous savons que les amigaistes sont aussi fractionnés 
+que les supporters de foot. Tant qu'ils vivent à la maison avec maman qui vérifie 
+à quelle heure ils rentrent à la maison pour étudier, tout va bien. Mais le jour 
+où ils sont devenus indépendants, ilsne font que du bordel."
+Alfonso "alfie" Ranieri, ATML, 10/12/2007
+
+
+1.1 Les problèmes que l'on rencontre quand on programme sur Amiga
+
+Il y a de nombreux problèmes pour un nouveau programmeur Amiga :
+
+1) Manque de bonne documentation;
+2) Manque d'outils modernes pour le développement d'applications;
+
+
+La plupart de la documentation sur les systèmes Amiga actuellement disponible est 
+vieillote, souvent en anglais et une bonne part est obsolète. Tout au long de ce 
+guide, nous recommanderons au lecteur des ressources encore valables dans le monde 
+des réincarnations de l'Amiga. Sur des systèmes comme Windows, MacOSX et Linux, 
+il existe des IDEs (Integrated Development Environment) comptant de merveilleuses 
+fonctionnalités, ces programmes offrent aux utilisateurs tout ce dont ils ont 
+besoin pour développer des logiciels de la manière la plus simple et la plus 
+rapide possible. Malheureusement, la plateforme Amiga n'offre plus cela aujourd'hui, 
+à l'exception d'un IDE, CubicIDE, qui offre un grand nombre de fonctionnalités 
+présentes dansles IDEs modernes. Ceci dit, CubicIDE est un logiciel payant (à ce jour,
+la licence utilisateur vaut environ 100 euros, un montant qui n'est pas toujours 
+abordable pour les étudiants et les programmeurs débutants ...) et ce logiciel ne 
+propose un support que pour AmigaOS3.x et MorphOS. Il n'existe pas de version pour 
+AROS par exemple.
+Dans ce guide nous vous présenterons les alternatives possibles en terme d'éditeurs 
+avancés. Ceci dit, il existe un problème plus important au-dessus de tous les 
+autres: la mentalité Amiga.  
+
+
+1.2 Philosophies passées et modernes: rappel des faits
+
+L'Amiga est né dans les années 80s et il a étonné tout le monde par ses 
+fonctionnalités ... Si vous n'en connaissez rien, nous vous suggérons de lire 
+son histoire sur www.amiga.it (ou www.amigaimpact.org), juste pour comprendre 
+certains concepts concernant la plateforme Amiga. L'utilisateur/le programmeur qui 
+débute un nouveau projet de dévelopement logiciel doit rattraper une quantité 
+d'informations culturelles et philosophiques qui sont le produit immédiat des 
+troubles qu'a traversé sa plateforme bien aimée au cours des années précédentes.
+Un certain nombre de ces idées seraient parfaitement acceptées si nous étions 
+encore dans la deuxième moitié des années 80s mais sont désormais complètement 
+obsolètes au 21ème sièce. En particulier, la philosophie amiga propose:
+
+1) Manque de design définitif: le programmeur commence à coder sans planning sur 
+ce qu'il est en train d'écrire;
+
+2) Pas de réutilisation des resources disponibles: ils développent souvent un 
+logiciel qui offre 4 ou 5 fonctionnalités identiques à celles de logiciels déjà 
+disponibles. Du coup, ils réinventent souvent la roue en n'utilisant pas les APIs 
+disponibles et les réécrivent à la place;
+
+3) Code source "fermé": le programmeur écrit son code en se considérant comme 
+le seul développeur capable de mener à bien son projet. Ce code n'est pas écrit 
+dans une optique de mise à disposition du public, il n'est pas accompagné d'une 
+documentation complète pour ceux qui seraient amenés à relire le code dans le 
+futur, il y a peu de commentaires et l'ordre d'écriture des fonctions n'est pas 
+toujours très compréhensible;
+
+4) Manque de collaboration: un programme Amiga est souvent développé par un seul 
+programmeur, il est très rare de voir plusieurs programmeurs Amiga collaborer sur 
+le même logiciel;
+
+5) Manque de portabilité: le programmeur a tendance à penser que son système 
+survivra pour toujours, c'est le seul système valable ("OS4 est le meilleur! NON,
+MOS est meilleur!") et il ne changera jamais. Pour cette raison, le code est 
+souvent très lié à la plateforme sur laquelle il a été écrit;
+
+6) Concentré sur les optimisations en Assembleur: le manque d'analyse provoque 
+l'écriture de code sans algorithmes solides et, dans le but d'améliorer les 
+performances, le développeur Amiga préfère utiliser le langage Assembleur;
+
+Il est inutile de répéter que les conventions énumérées précédemment sont (pour 
+la plupart) mauvaises et n'apportent rien de bon à la plateforme Amiga.
+Les logiciels du 21ème siècle (ceux qui sont absents sur Amiga et ceux que les 
+utilisateurs demandent) sont plutôt développés de la manière suivantes:
+
+1) Analyse et résolution des problèmes: pour développer un logiciel, on analyse 
+d'abord les problèmes qu'il doit résoudre. Cette analyse comprend une série de 
+phases qui permettront de définir le travail à réaliser pour développer le 
+logiciel sans ambiguité.
+
+2) Respect des règles de qualité: il existe des procédures et des métriques pour 
+garantir la qualité de certaines fonctionnalités d'un logiciel, par exemple la 
+réutilisabilité et la maintenabilité (= voir point 6). La réutilisabilité 
+signifie la réutilisation de fonctions et/ou de modules déjà écrits, de cette 
+manière le programmeur n'apas à réimplémenter ces fonctionnalités à partir de 
+rien. Ceci conduit à réduire les temps de production et une meilleure fiabilité 
+car les modules tiers réutilisés dans d'autres logiciels bénéficient de nombreux 
+tests et gagnent en rafinement.  
+
+3) Code "Ouvert": le code est écrit en gardant à l'esprit le fait qu'il peut être 
+consulté par quelqu'un qui n'a aucune idée de ce qu'il lit. Cela signifie que le 
+code doit être accompagné d'une documentation exhaustive et d'une pléthore de 
+commentaires au sein du code lui même. Le code est écrit en suivant toujours la 
+même organisation et en considérant une disponibilité publique.
+
+4) Utiliser plus de ressource humaine pour développer un logiciel: plusieurs 
+groupes d'individus peuvent collaborer sur le même projet. Pour ce faire, des 
+standards de code sont définis (comme la manière d'indenter, d'insérer des 
+commentaires, etc ...) et des outils de partage de source comme Subversion sont
+utilisés.
+
+5) Portabilité: il est inutile de préciser ce que la portabilité veut dire, 
+regardez des projets comme Firefox ou Openoffice ou des langages de programmation
+indépendants comme Java.
+
+6) Maintenance: il s'agit d'une phase de micro-analyse au cours de laquelle on 
+essaie de maintenir "en vie" le logiciel que l'on développe. Dans cette phase, 
+on peut corriger des bugs (maintenance corrective), ajouter de nouvelles fonctions
+ (maintenance adaptive) et optimiser certaine sparties du logiciel (maintenance 
+ perfective). Cette phase dérive directement des points précédents car un 
+ processus de maintenance peut être très coûteuse en ressources si le logiciel 
+ n'a pas été bien pensé ou que le code est mal écrit, parfois, cela peut entraîner 
+ l'arrêt du support du logiciel lui même.
+
+
+1.3 Qu'est-ce que la plateforme Amiga aujourd'hui ? Astuses pour la portabilité du code ...
+
+Ce chapitre peut paraître compliqué pour qui n'a jamais utilisé un Amiga ou n'a 
+jamais développé en utilisant ses APIs. Les doutes du lecteur devraient s'estomper 
+à la lecture de ce guide donc ne vous inquiétez pas si vous ne comprenez pas tout 
+dès le départ.
+
+Qu'est-ce que la plateforme Amiga ? Il faudrait résumer en une seule phrase plus 
+de vingt ans d'histoire de l'Amiga donc, pour être bref : aujourd'hui,  la 
+plateforme Amiga est la combinaison de quatre systèmes d'exploitation apparemment 
+indépendant mais dont l'avenir est intrinsèquement connecté. Nous nous réfèreront aux 
+systèmes d'exploitation suivants :
+
+- AmigaOS3.x: http://fr.wikipedia.org/wiki/AmigaOS#Kickstart.2FWorkbench_3.0.2C_3.1
+- AmigaOS4: http://fr.wikipedia.org/wiki/AmigaOS#AmigaOS_4
+- MorphOS: http://fr.wikipedia.org/wiki/MorphOS
+- AROS: http://fr.wikipedia.org/wiki/AROS 
+
+Vue les conditions dans lesquelles ces variantes Amiga vivent,
+ nous devons nous demander s'il est raisonnable de ne développer que 
+sur une seule de ces variantes alors qu'il est possible de le faire pour toutes.
+Si notre but est de développer pour la plateforme Amiga et que cette plateforme 
+résulte dans la combinaison de ces quatres incarnations, nous ne devrions en 
+exclure aucune. Chacune de ces incarnations pourrait prendre le pas sur les 
+autres pour une raison ou une autre et notre logiciel pourrait de retrouver sans
+système pour le faire tourner, en d'autres termes, notre logiciel pourrait 
+beêtement ne plus être un logiciel Amiga. Les chances de faire tourner notre 
+logiciel sur plus d'un système Amiga à la fois rendent le logiciel plus complet:
+plus de support pour plus de plateformes apporte une plus grande base d'utilisateurs 
+et, de ce fait, plus de retours et de tests de ses fonctionnalités. Cela apporte 
+une amélioration de la robustesse, la fiabilité, l'exhaustivité et l'efficacité 
+du logiciel en cours de développement ... Ecrire du code "Amiga multiplateforme" 
+n'est pas aussi difficile qu'il y paraît, mais il faut suivre quelques astuces :
+
+1) MUI:
+    http://aminet.net/dev/mui/mui38dev.lha ; 
+
+    Avant toute chose, le choix d'une API pour pouvoir construire des interfaces 
+    graphiques modernes (une qui ne nécessite pas de réimplémenter des gadgets
+    basiques depuis rien ou qui nécessite de définir des politiques de placement
+    des éléments ou d'avoir à se battre pour comprendre comment interconnecter 
+    les objets graphiques) il s'agira de MUI (ou Magic User Interface) plutôt 
+    que d'autres solutions. Les APIs de MUI sont disponibles sur l'ensmeble des
+    variantes Amiga ce qui en fait un must.
+
+2) SDI: 
+    http://sourceforge.net/projects/sditools/ ; 
+    
+    Chaque nouvelle incarnation de l'Amiga a étendue les APIs d'AmigaOS3.1 de
+    manières différentes. Du coup, sur chaque réincarnation, il existe un groupe 
+    d'API communes, un mis à jour et un groupe d'APIs incompatible ainsi que quelques
+    APIs incompatibles nouvelles et probablement absentes d'une incarnation à l'autre.
+    Par rapport au second point, quelques spécificités d'AmigaOS 3.x telles que 
+    l'implémentation des dispatcher de classes BOOPSI, les systèmes d'appels, etc ...
+    sont différent d'une incarnation à l'autre.
+    Pour pouvoir écrire des logiciels compatibles, il existe des macros disponibles,
+    elles sont appelées des outils SDI.
+    En utilisant les SDI, nous pouvons écrire des librairies et autres parties vitales
+    de notre logiciel de manière portable, sans avoir à connaître la manière dont 
+    les éléments sont implémentés dans AROS ou AmigaOS4 mais en ne connaissant que 
+    lesparties communes.
+
+3) Code conditionnel isolé:
+
+    Nous venons tout juste de réaliser qu'il existe de nouvelles fonctionnalités 
+    dans chaque incarnation de l'Amiga qui pourraient être absentes dans les autres.
+    Si vous voulez utiliser ces nouvelles APIs nous vous suggérons d'utiliser du 
+    code conditionnel (en langage C, ce code se retrouve encapsulé dans les 
+    instructions: #ifdef,#elif,#else,#endif), à l'intérieur des fonctions vitales
+    de votre logiciel, ou d'isoler ces parties dans des fonctions et/ou des fichiers 
+    séparés que vous incluerez à la compilation uniquement pour telle ou telle
+    incarnation.
+
+Parmi les logiciels open source Amiga, nous pouvons trouver Yam, SimpleMail,Scout,
+ainsi que les classe MUI TextEditor, Betterstring, NListxxx. Tous ces programmes 
+utilisés par les Amigaïstes sont développés en gardant à l'esprit les trois points
+précédents.

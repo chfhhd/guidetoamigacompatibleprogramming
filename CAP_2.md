@@ -1,0 +1,831 @@
+# Development environments
+
+*"When we need make we need it, as long as it only handles dependencies."* 
+Elena Novaretti, ATML, 28/12/2007
+
+
+*"data vu: The vague feeling that you've fixed this particular bug before"* 
+Peter Cherna, comp.sys.amiga.programmer, 1991 
+
+
+## 2.1 Development environments to write Amiga programs
+
+First of all, to develop something running on Amiga we need to choose our
+development system, which can run on the same Amiga platform or on other
+platforms, such as Windows and Linux. In the latter case, we call it
+development with a cross compiler. In amiga flavors like MorphOS,
+AmigaOS4 and newer AROS versions, every compiling guide is useless, because 
+these systems are provided with easy to use installation procedures and 
+documentation for new programmers. 
+Regarding the real execution of our programs, we can run them on the system
+we compiled it for, but we can use the (Win)UAE emulator for AmigaOS3.x
+compiled files, and/or AROS running in QEMU or VmWare.
+
+
+## 2.2 Windows cross compilers
+
+The power of the solution we are about to show is the capability to
+develop for the Amiga platform even if we don't have a real Amiga computer.
+In recent times, due to the fact that machines aren't always available
+to users and that some tools aren't mature on the new Amiga flavors,
+programmers have released a particular version of the DevC++ IDE, able
+to compile executables not only for Windows, but for AmigaOS3.x, AmigaOS4.x,
+MorphOS and AROS too. The version of this IDE is called AmiDevCPP. All we
+need to compile an Amiga program on Windows is a working installation of
+AmiDevCPP, downloadable from:
+
+	http://amidevcpp.amiga-world.de/
+
+Once you have installed it on Windows, you need to add the additional
+headers (SDI Tools) in the following paths:
+
+	AmigaOS3.x : "C:\CrossCompiler\AmiDevCpp\usr\local\amiga\m68k-amigaos\sys-include"
+	
+	AmigaOS4: "C:\CrossCompiler\AmiDevCpp\usr\local\amiga\ppc-amigaos\SDK\Local\common\include"
+	
+	MorphOS: "C:\CrossCompiler\AmiDevCpp\usr\local\amiga\ppc-morphos\sys-include"
+	
+	AROS: "C:\CrossCompiler\AmiDevCpp\usr\local\amiga\i686-aros\sys-include"
+
+We must pay particular attention to external MUI classes headers, which
+must be put in a subdirectory called "MUI" inside every above path.
+We must recreate directories for developers files for third party library
+headers, these directories must follow the form in which they are distributed.
+
+For those who are already familiar with DevC++ the following steps are trivial,
+but it's good to list them anyway: the creation of a new software project
+is very simple in AmiDevCPP, you have to choose the "New->Project" item on the
+file menu. Now we can choose to build a Windows project or a project for one
+of the four Amiga flavors, choosing, for example, a command line program
+(called "Hello World"). We suggest to choose a newly created directory
+for the new project. If we want to create a new project from already available
+sources, we must remove the source file that AmiDevCPP automatically
+created for us, selecting the item "Remove from project" from the Project
+menu, and adding our files using the "Add to project" item. The program might ask us
+to save changes made to the AmiDevCPP example file, simply say no, and the
+example file will disappear. After having made changes to our source files,
+to compile the program we simply have to select the "Rebuild All" menu item,
+in the "Compile" menu. If compilation went well we'll find our executable file
+in the selected project's directory.
+
+
+## 2.3 Compilation on AmigaOS3.x (GCC)
+
+Amiga programmers in the golden times of their platform had the chance to
+choose one of the compilers that were developed to program in that time.
+But over the years the chances to choose were reduced: they could choose SAS-C
+and GCC. The former was an Amiga specific compiler, easy to use, the latter
+is the famous compiler born on UNIX, which runs on OS3.x through a wrapper,
+the ixemul.library. Before the release of MorphOS and AmigaOS4, SAS-C
+developers discontinued the development of this compiler and, even if the
+road was clear, amiga users continued to use SAS-C. Even if in recent times
+a multiplatform Amiga compiler is gaining users, vbcc, which supports only C
+language, every new incarnation of Amiga uses GCC as its first standard compiler.
+
+Elena Novaretti in addition to this suggests to us:
+
+"[...] the real reason almost people use gcc is another one [...]: porting
+from linux. The GCC is NOT ANSI C, while vbcc is stricty ANSI C.
+Linux programs are almost written for gcc and NOT are ANSI-compliant. So, in
+these days all Amiga programmers merely to do linux porting, gcc (and all
+complete emulation suite, included geek gadgets etc) is for almost
+programmers most confortable choose if not even obliged.
+[...]
+when you find programs writton on linux which use posix or gnu C library, and
+these functions are not included into standard C library then it's a very
+disaster to adapt source to the Amiga. It's for this reason if you use gcc
+(and perhaps ixemul ;) you will are able to compile them[...]"
+
+As from tradition, GCC for AmigaOS3.x remained at 2.9.x version, and its
+installation and configuration might lead to the complete abandonment of your
+ideas about programming on this platform.
+We must say that a 3.x GCC version for AmigaOS3.x, which is mainly used to
+build executables for OS3.x from other platforms, such as Linux. In this way
+OS3.x versions of softwares like Yam, TextEditor MCC and so on can be obtained.
+GCC 3.x is available in a native OS3.x version too, the links to download it
+from are the same as the 2.x version:
+
+	ftp://ftp.back2roots.org/pub/geekgadgets/baseline
+
+	http://ftp.back2roots.org/geekgadgets/amiga/m68k/alpha/gcc/
+	
+	http://ftp.back2roots.org/geekgadgets/amiga/m68k/snapshots/990529/bin/
+
+The following are the files to download (you can find them searching the
+above links):
+
+	BOOT.lha
+	gcc-2.95.3-4-bin.tgz
+	binutils-2.9.1-bin.tgz
+	fileutils-4.0-bin.tgz
+	make-3.77-bin.tgz
+	libamiga-bin.tgz
+	libnix-1.2-bin.tgz
+	libm-5.4-bin.tgz
+	ixemul-48.0-inc-bin.tgz
+	ixemul-48.0-env-bin.tgz
+	fd2inline-1.21-bin.lha
+	GG-docs-0.9-bin.tgz (documentation)
+	GG-misc-bin.tgz
+
+You can optionally overwrite GCC2.x with the files in the following archives:
+
+	gcc-3.4.0-bin.tar.gz 
+	gcc-3.4.0-bin020.tar.gz  
+	gcc3-notes.tar.gz  
+	gcc3fix-20040503.tar.gz 
+
+We suggest the installation of GCC on OS3.x only if you have considered the
+eventuality of reaching some form of nervous breakdown.
+
+Now that we have done the recommendations, depending of what version you
+decided to install, you'll have to proceed with the installation of GCC 2.x.
+First unarchive the BOOT.lha file in a directory called GG/. Make two
+temporary assigns opening a shell:
+
+	Assign C: PATH_TO_GG_DIRECTORY/bin ADD
+	Assign LIBS: PATH_TO_GG_DIRECTORY/Sys/Libs ADD 
+
+Now you have some commands available, with which you can uncompress the
+others archive, like the tar program.
+In the shell, go into the GG/: directory
+
+	cd PATH_TO_GG_DIRECTORY/
+
+Start uncompressing the gcc-2.95.3-4-bin.tgz file in this way:
+
+	tar -xvf gcc-2.95.3-4-bin.tgz
+
+Expert users should have noticed that we didn't use the tar's z option, most of
+the archives we use are only files combined into a single file using tar,
+without compressing with the bzip algorythm. This action will lead to a
+number of subdirectories like bin/, lib/, sys-include (or os-include) and
+so on... Now you have to extract the contents of the other archives using
+the same extraction path you've previously used for gcc-2.95.3-4-bin.tgz.
+So, all files will be uncompressed and put in the correct directories
+automatically.
+Now you have to modify your User-Startup in S: with a text editor, adding
+the following instructions:
+
+	Assign GG:   DIRECTORY_PATH_GG/
+	Assign C:    GG:bin ADD
+	Assign LIBS: GG:Sys/Libs ADD
+	Assign S:    GG:Sys/S ADD
+
+Execute GG:Sys/S/GG-Startup
+
+Remember to modify GG:Sys/S/GG-Startup also, and to delete the following
+instructions:
+
+	Assign DEVS: GG:Sys/Devs ADD
+	Assign L:    GG:Sys/L    ADD
+
+Reset your Amiga and you should have a working standard GCC environment. Under
+such conditions you should be able to compile the classic hello world in C:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    printf("Hello world!\n");
+    
+    return 0;
+}
+```
+
+Save these lines of code in a txt file called hello.c and compile everything
+with:
+
+	gcc hello.c -o ram:hello
+
+The compiler shouldn't complain about any problems, producing the executable called
+"hello", RAM: resident. Now you simply have to launch the "hello" program from the 
+shell, if everything went fine you should see this classic message in the shell:
+
+	Hello World!
+
+Now it's time to install support to compile complex Amiga programs: the NDK3.9.
+The following site:
+
+	http://www.zerohero.se/cross/os3.html
+
+offers a nice preconfigured NDK3.9, ready to be executed with GCC, the archive is:
+
+	http://www.zerohero.se/cross/files/m68k-amigaos/ndk-3.9-includes.tar.bz2
+
+Download and uncompress it, you'll obtain a directory called "amiga", inside 
+you'll find the m68k-amigaos directory, which contains the "sys-include"
+directory. Rename "sys-include" to "os-include" and copy the latter inside the
+GG/ directory.
+Now you have to complete the NDK3.9 with some files that can be found at the following
+address:
+
+	http://yamos.svn.sourceforge.net/viewvc/yamos/trunk/src/
+
+First of all, open the remote include directory and take all the files in the
+following directories:
+
+	clib/
+	inline/
+	libraries/
+	mui/
+	proto/
+
+Then copy them into the matching subdirectories inside your GG/os-include directory.
+The "mui/" subdirectory is not present inside "os-include", so you have to create it
+and copy the relative file(s) inside.
+
+Now you need to modify a file: os-include/inline/intuition.h. 
+
+Open the above file with a text editor and search the following instructions:
+
+```c
+#ifndef NO_INLINE_STDARG
+__inline APTR NewObject(struct IClass * classPtr, CONST_STRPTR classID, ULONG tagList, ...)
+{
+  return NewObjectA(classPtr, classID, (const struct TagItem *) &tagList);
+}
+```
+
+Replace them with these:
+
+```c
+/*
+#ifndef NO_INLINE_STDARG
+__inline APTR NewObject(struct IClass * classPtr, CONST_STRPTR classID, ULONG tagList, ...)
+{
+  return NewObjectA(classPtr, classID, (const struct TagItem *) &tagList);
+}
+*/
+
+#ifndef NO_INLINE_STDARG
+#define NewObject(classPtr, classID, tags...) \
+    ({ULONG _tags[] = {tags}; NewObjectA((classPtr), (classID), (const struct TagItem *) _tags);})
+#endif
+```
+
+At last, you get a working GCC environment on AmigaOS3.x. To compile always remember
+to include the -noixemul option, that makes the creating executable to be
+independent from ixemul.library. To test the environment we give you an example
+of a minimal MUI window. The meaning of the following instructions will be
+explained later. Save the following example as helloMUI.c and compile everything
+with the following parameters: 
+
+	gcc helloMUI.c -o ram:helloMUI -noixemul
+
+```c
+/*****************************************************************************/
+#include <stdio.h>
+#include <proto/intuition.h>
+#include <proto/graphics.h>
+#include <proto/exec.h>
+#include <proto/iffparse.h>
+#include <proto/muimaster.h>
+#include <libraries/mui.h>
+
+struct IntuitionBase *IntuitionBase;
+struct Library  *MUIMasterBase;
+
+BOOL openLibs(void)
+{
+  if ( !(IntuitionBase=(struct IntuitionBase *) OpenLibrary("intuition.library",40)) )
+    return 0;
+
+  if ( !(MUIMasterBase=OpenLibrary("muimaster.library",19)) )
+  {
+    CloseLibrary((struct Library *)IntuitionBase);
+    return 0;
+  }
+
+  return 1;
+}
+
+void closeLibs(void)
+{
+  if (IntuitionBase)
+    CloseLibrary((struct Library *)IntuitionBase);
+
+  if (MUIMasterBase)
+    CloseLibrary(MUIMasterBase);
+}
+
+int main(int argc,char *argv[])
+{
+  Object *app, *window;
+
+  if (!openLibs())
+  {
+    printf("Cannot open libs\n");
+    return 0;
+  }
+
+  app = MUI_NewObject(MUIC_Application,
+    MUIA_Application_Title  , "MiaApplicationMUI",
+    MUIA_Application_Description, "This is my first MUI window",
+    
+    MUIA_Application_Window, window = MUI_NewObject(MUIC_Window,
+      MUIA_Window_Title,"MyMUIWindow",
+      MUIA_Window_ID , MAKE_ID('W','I','N','D'),
+      MUIA_Window_RootObject, MUI_NewObject(MUIC_Group,
+        MUIA_Group_Child, MUI_NewObject(MUIC_Text,
+          MUIA_Text_Contents, "Hello MUI World!",
+          TAG_DONE),
+        TAG_DONE),
+      TAG_DONE),
+    TAG_DONE);
+
+  if (!app)
+  {
+    printf("Cannot create application...\n");
+    return 0;
+  }
+
+  DoMethod(window,MUIM_Notify,
+           MUIA_Window_CloseRequest,TRUE,
+           app,
+           2,
+           MUIM_Application_ReturnID,
+           MUIV_Application_ReturnID_Quit);
+
+  SetAttrs(window,MUIA_Window_Open,TRUE, TAG_DONE);
+
+  {
+    ULONG sigs = 0;
+
+    while (DoMethod(app,MUIM_Application_NewInput,&sigs) != MUIV_Application_ReturnID_Quit)
+    {
+      if (sigs)
+      {
+        sigs = Wait(sigs | SIGBREAKF_CTRL_C);
+        if (sigs & SIGBREAKF_CTRL_C) break;
+      }
+    }
+  }
+
+  SetAttrs(window,MUIA_Window_Open,FALSE, TAG_DONE);
+
+  MUI_DisposeObject(app);
+
+  closeLibs();
+  
+  return 0;
+}
+/****************************************************************************/         
+```
+
+As we've already said, the result will be a file that, when executed, will show
+a MUI window. Remember to install the auxiliary SDI Tools and headers you need.
+A last tip: this example code is meant to be compiled only on AmigaOS3.x. The
+changes required to make the code more portable will be explained later.
+
+
+### 2.3.1 Preconfigured 68k GCC environment
+
+For those who didn't have the courage to configure a GCC environment from
+scratch on OS3.x, a file has been attached, which contains a ready to use
+GCC environment. To install it you simply have to have a new 100MB empty hardfile
+in your WinUAE configuration, format it calling it "Develop" from AmigaOS3.x on
+WinUAE and uncompress the lha archive with the lha command inside of this
+virtual hard disk. Now, you have to modify your s:user-startup in this way:
+
+	Execute Develop:ADE/ADE-Startup
+
+From the next system reboot you'll have a ready to use GCC environment
+available, with other useful programs for Amiga development.
+
+On a classic Amiga you simply have to uncompress the archive inside a
+directory called "Develop", and next modify your user-startup in this
+way:
+
+	Execute [PATH_DIRECTORY_DEVELOP]/ADE/ADE-Startup 
+
+We must say that everything you add in the ADE:os-include directory
+must be done following the rules explained in the previous paragraphs.
+
+The files inside the archives are up to date, so the installed header
+files are for AmigaOS3.9 (NDK_3.9, that you'll find inside the archive).
+The MUI headers belong to the 3.8 version of MUI, eventually the 
+os-include/libraries/mui.h file should be updated.
+
+
+## 2.4 TextEditors to write programs on Amiga
+
+Let's start from a general consideration: there isn't as fast and efficient
+a TextEditor like CubicIDE for Amiga. It's likely the only software you
+should desire that compares to other operating systems. On Windows, Notepad++ offers
+something similar, but it doesn't support many of the features of CubicIDE.
+Considering CubicIDE as only a TextEditor is reductive, this software is more
+than a simple TextEditor, it's the reference IDE for software development
+on Amiga.
+
+IDEs like DevC++, Netbeans, XCode are really slow even on modern machines,
+they are not very intuitive, although they offer more features than
+CubicIDE.
+
+By the way, it's hard to find a valid an alternative to CubicIDE outside the
+Amiga platform, and it's impossible to find it inside the small
+software set that this platform has inherited over the years.
+
+Once we explained the situation about CubicIDE, it must be specified that
+the price of this software is unobtainable to people without money, the full
+licence is sold at 100 euros. Sometimes, CubicIDE's author sells the license
+through some limited time promotion, or he offers the license in a development
+version which only supports C/C++ at a lower price, even if the overall price
+has never been lower than 50 euros. If you can buy CubicIDE, our advice is
+to do it immediately...
+
+You can use a lot of different TextEditors to write C sources. The valid
+freeware "alternatives" available are:
+
+-  BareED, BlackEditor and TuiTED on OS3.x;
+-  Annotate on OS4;
+-  BlackEditor, MorphED on MorphOS (It's an old version of CubicIDE OEM);
+-  JanoEditor on AROS;
+
+All of these TextEditors offer the main features you come to expect,
+such as cut&paste, configurable tab handling, undo, redo and so on...
+Each of these TextEditor have some limitations, for example BareED and
+TuiTED do not offer a preferences panel to the user and force the user
+to act manually on icons' tooltypes, the OS4 version of Annotate is not
+always stable, JanoEditor and BlackEditor don't offer any syntax
+highlighting, BareED and Annotate don't handle more files in a single
+session, and so on...
+
+Now that we have underlined the main defects of the above listed editors,
+the good features of these softwares are their intuitiveness and the
+overall speed and efficiency. We have tested many other freeware editors, but
+some of them were too complex, or they crashed the machine if used
+heavily. Some examples are Vim and FreeED. The former is a very powerful
+editor, but from the installation to its configuration and use, this
+famous software forces the user to do a careful study of its manual, same
+for FreeED and many others.
+
+On AROS, it's gaining form a developers IDE called Murks!IDE, which can
+be worth paying attention. Murks!IDE is freeware and opensource, written in
+C++, and uses Zune for its graphical interface.
+So, this software is totally portable to all Amiga flavors. It's good
+to underline that Murks!IDE is still at the beginning of its evolution,
+and it's still very limited. We suggest you try this software on
+AROS, or at least keep an eye on it, take a look at its sources too.
+
+
+## 2.5 Amiga documentation: historical books
+
+The last paper publications for developers about developing software for
+Amiga are from the early 90s and are difficult to find. We must
+list the main paper guides that accompanied Developers during the
+best period of this platform. These books introduce and master the
+AmigaOS1.3/2.04 programming, so many parts are obsolete, even if they
+explains the common foundations on which modern amiga flavors are
+based on. If you find them, preserve them jealously, more for a
+historical and affective reason than for their educational value.
+The most important books are called Amiga ROM Kernel Reference Manuals,
+they are:
+
+1) Libraries : explains system libraries, talks about subjects like
+           Intuition, BOOPSI, GadTools, ASL, Workbench, Icon, how
+           libraries are made, ports, messages, semaphores, etc...;
+
+2) Devices: talks about the Commodore's few released devices like
+           serial.device, parallel.device, audio.device,
+           clipboard.device, and it contains the first documentation
+           about the IFF format;
+
+3) Include & Autodocs : it's mainly a printed version of autodocs and Amiga
+            includes (version 2.04);
+
+There are also:
+
+4) Amiga Hardware
+   Reference Manual: explains old Amiga platform's OCS and ECS chipsets in detail.
+
+5) AmigaDOS Manual: it's the only official documentation from Commdore about AmigaDOS,
+            processes and Filesystem;
+
+6) Amiga Intuition 
+   Reference Manual: it's written by the original fathers of the Amiga, and it's similar
+             to the Style Guide (see below);
+
+And:
+
+7) Amiga Programmer's 
+   Guide to ARexx: ARexx programming manual;
+
+8) User Interface Style Guide: a guide to build graphical interfaces following some
+                   Amiga philosophies. It talks about Workbench, ARexx and
+                   Preferences too, although in a introductory way.
+
+9) Guru Book: talks about AmigaDOS, filesystem, Shell, 68k assembly programming on Amiga,
+          the use of C language using SAS-C compiler;
+
+Basically, the most educational book of this era is Libraries, followed by AmigaDOS Manual
+and Style Guide. The other books deal with outdated parts of the Amiga system and so reading
+them could be misleading for those who want to start Amiga programming. So, it's always a good
+idea to have Libraries, AmigaDOS Manual and Style Guide books available.
+
+
+### 2.5.1 Amiga documentation: the electronic format
+
+Most of the Amiga documentation for the Amiga operating system and third party APIs is
+distributed in electronic format. Even the Amiga ROM Kernel Reference Manuals
+can be found in electronic format on the developers CD.
+There are articles completing the RKRM which are called Amiga Mail volume 2, they
+talk about changes made to AmigaOS 3.0 and are available in electronic format,
+usually inside the Development CD (not free). These articles explain the old AGA
+chipset, datatypes, some BOOPSI classes introduced in AmigaOS3.0, the debug, 
+TCP/IP etc... on Amiga. They are articles from 1993/1994 and so are a bit outdated.
+Documentation about AmigaOS 3.5 can be found inside the last Developer CD, AmigaOS 3.9
+docs is inside the archive called NDK3.9.
+
+Every new flavor of Amiga is accompanied with a series of electronic documents
+that explains the main differences between every amiga flavor and AmigaOS3.x.
+
+Regarding the most common electronic format for developers documentation, they
+are AutoDoc, AmigaGuide, HTML and PDF. The last two are easily readable on
+platforms other than Amiga, AmigaGuide is simply an hypertext format that the guides
+of Amiga programs were distributed with. We'll talk about AutoDoc here.
+
+
+### 2.5.2 Autodoc or Robodoc
+
+Autodoc is an ASCII text format written with a particular syntax. In the Amiga,
+there are readers that allow us to read an autodoc as if it were a hypertext,
+although these programs are handled only with the particular text formatting inside
+an AutoDoc. An AutoDoc file is usually the output of a particular program that
+can extract comments from a source code file and translate them into AutoDoc.
+Obviously, comments must be written following particular rules to have them
+converted into one or more AutoDocs.
+
+The idea of AutoDoc is from Commodore's times, they thought about a way
+to maintain API documentation up to date without forcing the programmer to
+update API documents as well as the API code. So a program called "AutoDoc"
+was born and released with the official documentation of the first versions
+of AmigaOS.
+
+Luckily there is an open alternative for all Amiga flavors: Robodoc.
+
+(You can find it on Aminet for AmigaOS3.x, inside our Develop_XX.lha and
+DevAROS_XX.zip files, with the reader AutoDocReader, already configured
+to read system and MUI AutoDocs).
+
+Robodoc follows the same idea of the Commodore's program, adding new
+interesting features, for which we introduce you to the documentation
+attached to the program itself. Robodoc documentation explains the
+AutoDoc standard and how to write comments for your code.
+
+All of the documentation of the Amiga and MUI APIs are in AutoDoc format,
+so we suggest you get familiar with these files and choose a
+program to handle them that suits your needs, such as AutoDocReader.
+
+
+## 2.6 Debugging on Amiga: how to find errors in our programs
+
+Introducing the subject of searching for errors in programs to those 
+who have no idea of how an Amiga compatible system is structured
+requires some knowledge about the system on which we will program.
+For this reason we'll introduce some basic concepts of AmigaOS,
+postponing the rest to the following chapter.
+
+
+### 2.6.1 Amiga: a system without memory protection
+
+An Amiga compatible OS doesn't have memory protection due to its own
+nature. You surely already know what "memory protection" is, but it's
+better to explain this concept here:
+
+Memory protection is a feature of all modern operating systems. Basically
+a memory protected system executes each program giving it a portion of
+memory, which is shown to the program process as if it were all the memory
+available in the machine. The executed program handles this memory as
+usual, nevertheless it's unable to access other memory portions, because
+the system itself prevents it from being aware of them. To reach this goal,
+the system uses some parts of the CPU (like the MMU), so to have memory
+protection in a system, we need the underlying hardware support.
+
+At its beginning, the Amiga system used a Motorola 68000 processor, which was
+a processor lacking MMU and other parts that every modern CPU of our
+century is equipped with. Additionally, the project of the Amiga platform
+was born with a console/computer thing in mind, so the original team
+gave more attention to the multimedia features of the platform instead of
+protection techniques of the operating system. Keep in mind that we are
+referring to the early 80s, when consoles and home computers ruled the
+market, these machines had very poor power and resources and so they
+couldn't face slow downs caused by protection techniques, even if they
+were not supported by the underlying hardware.
+
+For these reasons, the Amiga original system allows a process to read
+and write datas onto other processes' memory, and many Amiga APIs (such
+as Hook and IPC support, used everywhere) uses this opportunity to
+get better performance. Obviously, if a program contains an error,
+the wrong writing of a memory area causes unexpected situations that
+lead to the so hated Amiga crashes. Even the amiga system parts might
+be involved in an abnormal situation, at least in the original Amiga
+system, and this can lead to a freeze that forces the user to reboot
+the machine. In other words, while an error in a process inside a
+protected memory system involves only the process itself, the same
+error on an Amiga system might involve other processes and the entire
+system.
+
+
+### 2.6.2 Enforcer and Amiga compatible systems
+
+As we previously explained, an Amiga system doesn't have memory protection and if
+a software bug occurs we would notice it only when the system freezes.
+Anyway, the Amiga platform, since its first version based on Motorola 68000, has
+evolved in a short time, until using more modern processors like 68030 on
+Amiga 3000 and many other expansion boards sold in the early 90s. Even the
+operating system evolved from its first 1.x version to the more stable 2.x, 
+anyway no major work has been done on memory protection, in order to maintain
+backward compatibility with old software and machines.
+With the arrival of MMU equipped 68030 processors, at least some debug software
+was developed that used this hardware feature, Enforcer was the most used.
+
+Enforcer uses MMU to detect reading and writing done by an Amiga program during
+execution. The main task of Enforcer is to report every attempt to read/write
+memory regions which should be accessible only from system modules. 
+Furthermore, this debug tool blocks every attempt to read/write nonexistent memory
+areas. If a program is going to read a "protected" area from Enforcer, it will
+catch the read attempt, it will show what happened to the user (signaling the, so
+called "Enforcer Hit") and will pass zero instead of the real memory address to
+the bugged program. In the case of a wrong writing attempt, Enforcer will
+report this action the the user.
+
+In Amiga compatible systems, like MorphOS, AROS and AmigaOS4 we can find
+typical protections done by Enforcer on AmigaOS3.x already implemented. Anyway,
+it's good to advise you that such features are available in AROS only in recent
+times, with the new 64bit kernel, and we hope that such features will be
+inherited to the 32 bit kernel soon. Regarding AmigaOS4, besides the usual
+Enforcer protections, the free memory areas, stack memory areas of every
+program and freed memory areas are protected from following illegal access too.
+
+If you are developing through WinUAE, there is an ad hoc Enforcer version
+called winuaeenforcer, inside the emulator's archive.
+
+
+### 2.6.3 MungWall / MemGuard / WipeOut
+
+We've already pointed out that a memory protection for free and freed memory
+areas is already being contemplated in AmigaOS4. Handling of these memory areas
+could be controlled before the arrival of this Amiga compatible system, using
+a special debug tool called MungWall. Although AmigaOS4 already protects these
+parts, the use of a tool such as MungWall is useful to find memory handling
+problems inside our programs, even in this Amiga compatible system. The
+counterpart of MungWall on AmigaOS4 is MemGuard, in MorphOS another alternative
+called WipeOut should work. AROS has MungWall's features already built in, and
+if this Amiga system has been compiled with debug options (all nightly builds
+are compiled this way) such features can be used.
+Let's show how MungWall works.
+MungWall has two main tasks:
+
+- Mung: to mark all free/freed/uninitialized memory areas with special odd values;
+
+- Wall: to allocate a handful of memory before and after every allocation done
+        by a program. Such limited areas are marked with a value and are
+        enriched with some information to perform tests. Such limited
+        areas can be compared to "walls";
+
+Regarding the first MungWall task, first of all the marking of
+free/freed/uninitialized memory areas with an odd value should bring serious
+problems to programs containing errors. Indeed, there are a lot of chances that
+the reading (unexpected/wrong) of these values instead of NULL will cause a
+visible abnormal behavior of bugged programs. Somehow, these programs are put
+in a stress condition by MungWall, in order to emphasize wrong uses of memory
+areas.
+The second task of MungWall allows us to understand if our
+allocations/deallocations are carried out in the proper way. More precisely, if
+a program were to free up more memory than allocated, MungWall will report this
+incident. MungWall's tasks are intrinsically linked to the work of Enforcer,
+in fact, if a program read a MungWall set odd value or a "wall" value, it's
+likely that the program would generate an Enforcer Hit, and all of this would allow
+us to identify more easily the error in our program.
+
+Our friend Bernd Roesch we also noted:
+
+On AmigaOS3.x there is gccfindhit on Aminet, to find the sourceline where the
+hit came. It's similar to OS4 addr2line [see paraghraph 2.6.5]. On 68k,
+programs need to be built with the -g option. 
+
+To get segment offsets you need to start segtracker during boot and
+(winuae)Enforcer outout print out segment offset and large stack backtrace. 
+
+[N.B.: Almost all programs AmigaOS runs are loaded by the system as segments
+using the LoadSeg()'s dos.library call. So most code in memory is structured 
+as "segment list". 
+It's possible to get corrupted segment lists if something overriding the
+standard LoadSeg() not using the correct seglist format, or something is
+trashing memory on your system.
+Using SegTracker while is running Enforcer, it will try to trace back into the
+segment lists of the task causing the hit.]
+
+You can use a graphical debugger such as Barfly(on Aminet) to single step your
+program. 
+
+Before you start your program type in a shell (winuae) Enforcer 1 then an illegal
+mem access will give an illegal address access requester. But before you jump into
+debugger, it's better to set (winuae) Enforcer 0 to switch off the illegal address stop
+mode, because debuggers also like to access illegal addresses. The mode can
+always at any time be changed.  Now you can choose on barfly post mortem and you can 
+grab the task that is stopped by the Guru requester and single step it. 
+
+
+### 2.6.4 Sashimi and the serial port
+
+Most of the debug tools on Amiga like Enforcer and MungWall route their output to
+the serial port, this means that we should have a device, usually another
+connected computer, which we can intercept debug information with. Anyway, not
+all people have a debug "station", for this reason we use Sashimi, a tool
+to route to the command line interface all the information that goes through
+the serial port.
+Sashimi allows us to view all output routed to the serial port, but it also
+allows us to save the output of a file, in order to analyze it more carefully.
+Further information on Sashimi is available in the documentation of this tool.
+
+Not closely tied to Sashimi is the use of functions that route their output to
+the serial port, such as kprintf(). The syntax of kprintf() is identical to that
+of printf(), so you shouldn't have problems. Every flavor of Amiga has their
+unique way to provide the facility of sending strings to the serial port, for
+this reason we should use conditional code that allows us to use a macro in every
+cases:
+
+```c
+#ifdef __amigaos4__
+    #define __KPRINTF DebugPrintF
+#else
+    #define __KPRINTF kprintf
+#endif
+
+#ifdef _DBUG
+    #define KPRINTF __KPRINTF
+#else
+    #define KPRINTF if (0) __KPRINTF
+#endif
+```
+
+Such code, that must be included in every file to debug, allows us to use the
+KPRINT() macro in every flavor of Amiga. More precisely, before this code, if
+we want to "activate" our serial output, we should add:
+
+```c
+#define _DBUG
+```
+
+in order to send through KPRINTF() the debug information that we consider useful. If
+you don't define _DBUG symbol, the conditional code lines will replace all
+KPRINTF() calls with empty lines. Anyway, it's good to underline that this way
+of sending output to the serial port is only one example. You must keep in mind
+that debug functions like kprintf() are not automatically available, and you
+often will have to use the respective libraries containing such functions.
+
+In both the Develop_XX.lha archive and the DevAROS_XX.zip distribution you can
+launch preconfigured Sashimi in order to save your own output in a file inside
+the Debug-Output directory. To get this result you have to execute the
+Debug-Startup script, inside the Debug/ directory for Develop_XX.lha and in S:
+for DevAros_XX.zip.
+
+
+### 2.6.5 AmigaOS4, GrimReaper and addr2line
+
+AmigaOS4 offers the chance to use a popular UNIX tool to develop native programs:
+addr2line. To use addr2line we first have to compile our program with gcc, using
+the -ggdb option. In this way the resulting executable will be full of
+additional information that will be shown if the program crashes. As the 
+AmigaOS4 users know, a crash in the system involves the execution of a
+particular tool called Grim Reaper, which assists the user during the abnormal
+behavior of a program in a friendly way, providing a lot of information
+regarding the error that occured. Anyway, such information is not available if
+the program that caused the error wasn't compiled with the -ggdb option.
+Only if it is compiled in this way, do we have the chance to find the exact point
+our program has crashed.
+After the -ggdb compiled program has crashed, we have to act as follow:
+
+1) Click on "Other" button on GrimReaper;
+2) Click on "Stack Trace" page;
+3) Click on "Build Stack Trace" button;
+
+Now a list of our program's functions will be shown. The uppermost shown
+function in the list is the one that has produced the problem in the crashed
+program. The following items refers to function's steps running at the time of
+the crash. Each of these items has the following form:
+
+```c
+function_name()+offset1 (section sectionNumber @ offset2)
+```
+
+For example, the MUI3.9's Slidorama demo in AmigaOS4 crashes at this point:
+
+	muimaster.library:CustomClassDispatcher()+0x8C (section 1 @0x992c)
+
+To understand what offset2 is related to you simply need to use the debug
+tool, included in AmigaOS4, called addr2line in such way:
+
+	ppc-amigaos-addr2line -e program_name -f offset2
+
+In our example:
+
+	ppc-amigaos-addr2line -e Slidorama -f 0x992c
+
+After all, the offset1 that we have considered is useful if we want to
+disassemble the object code of our program. If you need to do such a thing we
+suggest that you read the appropriate guide inside the AmigaOS4's SDK.
+

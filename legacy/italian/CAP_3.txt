@@ -1,0 +1,523 @@
+CAPITOLO 3: Conoscenze base per la programmazione su Amiga 
+
+"AmigaOS is a microkernel message-passing design, with better response time
+and performance than any other readily available PC operating system: including
+MINIX, OS/2, Windows, MacOS, Linux, UNIX, and *certainly* MS-DOS.
+
+The microkernel design has proven invaluable. Things like new file systems
+that are normally available only from the vendor are hobbyist products on
+the Amiga. Device drivers are simply shared libraries and tasks with specific
+entry points and message ports. So are file systems, the window system, and
+so on. It's a WONDERFUL design, and validates everything that people have
+been saying about microkernels. Yes, it takes more work to get them off the
+ground than a coroutine based macrokernel like UNIX, but the versatility
+pays you back many times over."
+        
+Peter Da Silva, The Tanenbaum-Torvalds Debate, 07/02/1992
+
+
+3.1 Escursus sugli OS Amiga
+
+Introdurre concetti riguardo alla programmazione partendo dal nulla è 
+molto complicato: non si ha mai la certezza che una nozione venga 
+espressa in maniera chiara e se tale teoria sia giusto esporla prima o 
+dopo un'altra. Proviamo a procedere fissando delle regole base per la 
+comprensione di questo e dei prossimi capitoli: 
+
+- Conoscere le basi del linguaggio C;  
+- Conoscere le basi dei sistemi operativi; 
+
+Tutte le API Amiga sono pensate per essere utilizzate con il linguaggio 
+C, o addirittura l'assembly 68k nel caso di OS3.x, ma visto che siamo nel 
+21esimo secolo è bene soffermarci sul più noto linguaggio di medio 
+livello di cui tutti hanno sentito almeno una volta parlare. Appurato 
+che abbiate padronanza di concetti quali le funzioni, i puntatori, le 
+strutture, casting, le API (Application Programming Interface) ecc... 
+introduciamo adesso qualche nozione relativa ad Amiga. 
+
+
+3.2 All'interno degli AmigaOS 
+
+Tutte le incarnazioni Amiga hanno come radice comune AmigaOS3.1, dunque 
+è necessario effettuare un piccolo escursus riguardante l'AmigaOS degli 
+anni '90. AmigaOS è un Sistema Operativo monoutente multiprogrammato, 
+costituito principalmente da tre importanti componenti: 
+
+- Un microkernel atipico chiamato MultitaskingExecutive (Exec); 
+- AmigaDOS; 
+- Intuition; 
+
+A questi tre componenti si affiancano altri moduli più o meno rilevanti. 
+
+Exec è il microkernel di AmigaOS. Il compito di Exec è gestire l'intero 
+sistema con le annesse risorse, nonché i programmi in esecuzione (detti 
+task), le porte messaggi e molto altro ancora. 
+
+AmigaDOS è il modulo che si occupa dell'I/O di AmigaOS, ed offre: 
+
+- Un'interfaccia in linea di comando; 
+- I processi: task che possono utilizzare particolari funzioni; 
+- Le API relative al filesystem, il quale si occupa dell'organizzazione 
+  dei dati sui dispositivi di memorizzazione. Un filesystem su AmigaOS è 
+  un processo, con cui le applicazioni comunicano attraverso lo scambio 
+  di messaggi; 
+
+Intuition fornisce ad AmigaOS gli oggetti grafici per interagire con 
+l'utente. Sebbene l'interfaccia grafica di AmigaOS abbia come cuore 
+Intuition, vi sono altri strumenti attorno a questo modulo che 
+permettono di costruite rapidamente una GUI: 
+
+- GadTools, dovrebbe facilitare la costruzione di nuovi gadgets e menu; 
+- ASL, il quale permette una più facile costruzione dei Requesters; 
+- BOOPSI, il quale permette di estendere e migliorare Intuition attraverso 
+  la tecnica orientata agli oggetti (OOP). BOOPSI è essenzialmente una 
+  raccolta di classi per la creazione di oggetti grafici; 
+- Workbench, un programma di sistema che utilizza simboli grafici, 
+  detti icone, con cui è possibile interagire con il filesystem offerto 
+  da AmigaOS; 
+  
+AmigaOS più in generale è organizzato secondo una gerarchia di moduli sovrapposti; 
+partendo dai moduli che lavorano più in basso si hanno: 
+
+- resource: sono delle raccolte di funzioni a basso livello che permettono 
+  di accedere in modo diretto all'hardware del sistema; 
+- device: moduli in grado di elaborare comandi e dati relativi ad uno o più
+  dispositivi I/O a caratteri e/o blocchi. L'interazione con un device
+  avviene attraverso la tecnica dello scambio messaggi (IPC). I device 
+  spesso comprendono funzioni utili alle applicazioni; 
+- library: sono delle raccolte di funzioni adibite a diversi scopi; 
+- i programmi di sistema; 
+
+Le library sono organizzate seguendo una gerarchia di livelli, secondo 
+gli insiemi di funzioni che raccolgono; difatti ci sono gruppi di 
+funzioni che lavorano più a basso livello rispetto ad altri gruppi di 
+altre librerie. I device e i resource non possiedono questa stessa 
+organizzazione, in quanto ciascuno di loro gestisce il dispositivo per 
+il quale è stato progettato. Per la maggior parte dei compiti da 
+svolgere vengono utilizzate le library, e, solo in casi particolari, 
+vengono utilizzati i device e i resource. Questo design rende AmigaOS un 
+Sistema Operativo modulare, dando la possibilità di estendere ed 
+aggiornare le sue caratteristiche non interferendo con le applicazioni 
+esistenti. 
+
+
+3.3 Utilizzo delle funzioni Amiga 
+
+Qualsiasi programma che sfrutti le funzioni di un sistema operativo, in 
+questo caso AmigaOS e derivati, dev'essere in grado di accedere a tali 
+API. Su AmigaOS utilizzare le funzioni di una libreria, un device ecc... 
+significa innanzitutto rendere disponibili all'applicazione tali moduli. 
+Per tale motivo si esegue il cosiddetto processo di apertura di una o 
+più librerie all'inizio di qualsiasi programma. 
+
+Su AmigaOS c'è una libreria sempre aperta: exec.library, la quale 
+rappresenta le funzioni che il kernel Exec mette a disposizione del 
+programmatore. Per esempio, nel caso in cui volessimo creare un 
+requester, impiegando a questo scopo la struttura EasyStruct, definita 
+in <intuition/intuition>: 
+
+
+struct EasyStruct {
+    ULONG es_StructSize;    /* dimensione della struttura              */
+    ULONG es_Flags;         /* viene di solito settato a 0             */
+    UBYTE *es_Title;        /* titolo del requester                */
+    UBYTE *es_TextFormat;   /* stringa all'interno del requester           */
+    UBYTE *es_GadgetFormat; /* stringa all'interno del bottone di chiusura */
+};
+
+e la funzione EasyRequestArgs() di Intuition, dichiarata in questo modo: 
+
+
+
+LONG EasyRequestArgs(struct Window *window,               /*finestra a cui   */
+                                                          /*fa capo il       */
+                                                          /*requester;       */
+                              
+                     CONST struct EasyStruct *easyStruct, /*il requester da  */
+                                                          /*aprire;      */
+                              
+                     LONG *idcmpPtr,                      /*un particolare   */
+                                                          /*evento che chiuda*/
+                                                          /*il requester     */
+                              
+                     CONST APTR args );                   /*eventuali        */
+                                                          /*argomenti...;    */
+         
+dovremmo prima procedere all'apertura della intuition.library. Per 
+svolgere questo procedimento esiste una funzione di Exec chiamata 
+OpenLibrary(). Alla chiusura del programma sarà invece necessario 
+chiudere tutte le librerie che abbiamo aperto all'inizio del programma 
+stesso, a questo proposito esiste la funzione CloseLibrary(). 
+Ricapitolando, nel nostro esempio avremo una situazione del genere: 
+
+
+/*****************************************************************************/
+#include <stdio.h>
+#include <proto/exec.h>
+#include <proto/intuition.h>
+
+struct IntuitionBase *IntuitionBase;
+
+int main(void)
+{
+  IntuitionBase=(struct IntuitionBase *) OpenLibrary("intuition.library",39);
+
+  if (!IntuitionBase)
+    return 0;
+  
+  struct EasyStruct requester;
+  
+  requester.es_StructSize   = sizeof(struct EasyStruct);
+  requester.es_Flags        = 0;
+  requester.es_Title        = "Requester prova";
+  requester.es_GadgetFormat = "Exit";
+  requester.es_TextFormat   = "Questa è una prova!";
+  EasyRequestArgs(NULL, &requester, NULL, NULL);
+
+  if (IntuitionBase)
+    CloseLibrary((struct Library *)IntuitionBase);
+  
+  return 0;
+}
+/*****************************************************************************/
+
+Per utilizzare le funzioni di una libreria, un programma ha bisogno di 
+un puntatore all'area dati della libreria, memorizzata da qualche parte 
+in memoria, tale area è detta "Base". La Base di una libreria ritornata 
+da OpenLibrary() non è altro che una struttura avente un proprio nome 
+(per conoscere il nome di una Base di una funzione rimandiamo agli 
+header proto delle omonime funzioni). OpenLibrary() prende come argomenti il 
+nome della libreria da aprire, e la versione minima della libreria 
+stessa. In altri termini se il sistema non fosse in possesso della 
+libreria da noi richiesta o di una versione antecedente a quella da noi 
+riportata, OpenLibrary() ritornerebbe il valore NULL. 
+
+Il primo parametro di OpenLibrary() come abbiamo accennato rappresenta 
+il nome della libreria, tale libreria potrebbe essere già in memoria, in 
+questo caso OpenLibrary() aprirà la libreria residente, tuttavia la 
+nostra libreria potrebbe non essere ancora residente in memoria. In 
+quest'ultimo caso OpenLibrary() si riferirà al dispositivo "LIBS:" (che 
+generalmente è un'assegnazione a Sys:Libs/) per cercare la libreria, 
+caricarla in memoria ed aprirla. Nel caso in cui si volesse specificare 
+un altro percorso invece del canonico "LIBS:", basterà inserire il 
+relativo percorso con nome della libreria come primo parametro di 
+OpenLibrary(), per esempio: 
+
+OpenLibrary("sys:pluto/pippo.library", 0); 
+
+In questo modo apriamo una qualsiasi versione della library 
+pippo.library residente in sys:pluto/. Sebbene AmigaDOS sia case 
+insensitive, le funzioni di Exec non lo sono, quindi bisognerà stare 
+attenti alle maiuscole e minuscole dei nomi inseriti in OpenLibrary(). 
+
+L'area dati di una libreria è detta Base in quanto indica la parte 
+inferiore della memoria che è riservata ad una data libreria. Prima 
+della Base, o se vogliamo "sopra" la base, risiede un'altra struttura 
+chiamata tavola delle funzioni. La tavola delle funzioni contiene i 
+riferimenti a tutte le funzioni che una libreria fornisce. Il programma 
+in sostanza scorre la tavola delle funzioni per trovare una tra esse che 
+è stata invocata. Dopo esserci accertati di avere a disposizione un 
+puntatore alla Base della libreria cui siamo interessati possiamo quindi 
+utilizzare le funzioni che la libreria ci mette a disposizione. E' 
+importante notare come AmigaOS preveda alla fine dell'utilizzo di una 
+libreria la sua chiusura esplicita da parte del programmatore, per 
+ottenere questo si impiega la funzione CloseLibrary(). 
+
+E' prassi comune, visto il numero di librerie che di solito si usano in 
+un programma, spostare i processi di apertura e quelli di chiusura delle 
+librerie all'interno di due funzioni, le quali si occupano 
+rispettivamente di aprire tutte le librerie che dovremo utilizzare e 
+chiudere tutte le librerie alla fine del nostro programma. 
+
+
+3.3.1 Le interfacce su AmigaOS4 e i simboli per preprocessore degli OS Amiga
+
+AmigaOS4 introduce dei cambiamenti per ciò che concerne l'accesso alle 
+funzioni di una libreria. Nel paragrafo precedente avevamo appreso come 
+un programma, per accedere alle funzioni contenute all'interno di una 
+libreria, debba prima ottenere accesso alla Base della libreria. 
+Attraverso la Base il programma acquisisce quindi la possibilità di 
+accedere alla tavola delle funzioni della libreria corrispondente. Su 
+AmigaOS4 è stato introdotta una nuova versione di librerie condivise, le 
+quali supportano più tavole delle funzioni, queste ultime vengono 
+chiamate "interfacce". Su AmigaOS4 non è dunque possibile accedere 
+direttamente a delle funzioni di una libreria solo aprendo quest'ultima 
+con OpenLibrary(), bisognerà esplicitare prima quale interfaccia 
+contiene le funzioni cui noi ci riferiremo. Le funzioni base di una 
+libreria sono puntate quasi sempre dall'interfaccia "main", su OS4 anche 
+le funzioni delle API di AmigaOS3.x sono accessibili da tale interfaccia. 
+Dunque mentre su AmigaOS3.x è bastato avere accesso alla Base di una funzione 
+attraverso OpenLibrary(), su AmigaOS4 bisognerà anche richiedere 
+l'accesso ad un'interfaccia della libreria, nel nostro caso "main". Per 
+ottenere tutto questo sono presenti in ExecSG (il nuovo kernel di 
+AmigaOS4) due nuove funzioni, chiamate GetInterface() e DropInterface(), 
+utilizzate rispettivamente per aprire e chiudere un'interfaccia. 
+L'esempio del paragrafo precedente diventa così il seguente: 
+
+
+/*****************************************************************************/
+#include <proto/exec.h>
+#include <proto/intuition.h>
+
+struct Library *IntuitionBase;
+struct IntuitionIFace *IIntuition;
+
+int main(void)
+{
+  IntuitionBase= (struct Library *) IExec->OpenLibrary("intuition.library",39);
+
+  if (!IntuitionBase)
+    return 0;
+  
+  IIntuition = (struct IntuitionIFace *) IExec->GetInterface(IntuitionBase, 
+                                 "main", 1, NULL);
+  
+  if (!IIntuition)
+  {
+    IExec->CloseLibrary((struct Library *)IntuitionBase);
+    return 0; 
+  }             
+  
+  struct EasyStruct requester;
+  
+  requester.es_StructSize   = sizeof(struct EasyStruct);
+  requester.es_Flags        = 0;
+  requester.es_Title        = "Example requester";
+  requester.es_GadgetFormat = "Exit";
+  requester.es_TextFormat   = "This is a test";
+  IIntuition->EasyRequestArgs(NULL, &requester, NULL, NULL);
+  
+  
+  IExec->DropInterface((struct Interface *)IIntuition);
+
+  if (IntuitionBase)
+    IExec->CloseLibrary((struct Library *)IntuitionBase);
+    
+  return 0;
+}
+/*****************************************************************************/
+
+Innanzitutto è bene notare come il nome della struttura Base non sia più 
+riferito ad una data libreria, eccetto in alcuni rari casi (vedere le 
+relative documentazioni a riguardo). Come nel caso di exec.library, 
+anche l'interfaccia IExec riferita a questa libreria risulta già aperta 
+e disponibile al programmatore. Ciascuna funzione è adesso invocabile 
+solo esplicitando un accesso diretto all'interfaccia relativa, come ad 
+esempio IIntuition->EasyRequestArgs(). Tutto ciò rende difficile 
+mantenere la compatibilità con le altre incarnazioni Amiga, per tale 
+motivo è possibile utilizzare due simboli da impiegare con il 
+preprocessore __USE__INLINE__ e __USE_BASETYPE__, i quali ci permettono 
+di mantenere rispettivamente la sintassi delle funzioni di AmigaOS3.x, e 
+di utilizzare di nomi specifici per le Basi delle librerie. Il nostro 
+esempio scritto in maniera portabile diventa: 
+
+
+/*****************************************************************************/
+#ifdef __amigaos4__
+#define __USE_INLINE__
+#define __USE_BASETYPE__
+#endif
+#include <proto/exec.h>
+#include <proto/intuition.h>
+
+struct IntuitionBase *IntuitionBase;
+struct IntuitionIFace *IIntuition;
+
+int main(void)
+{
+  IntuitionBase= (struct IntuitionBase *) OpenLibrary("intuition.library",39);
+
+  if (!IntuitionBase)
+    return 0;
+  
+  #ifdef __amigaos4__
+  IIntuition = (struct IntuitionIFace *) GetInterface(IntuitionBase,  
+                            "main", 1, NULL);
+  
+  if (!IIntuition)
+  {
+    CloseLibrary((struct Library *)IntuitionBase);
+    return 0; 
+  } 
+  #endif      
+  
+  
+  struct EasyStruct requester;
+  
+  requester.es_StructSize   = sizeof(struct EasyStruct);
+  requester.es_Flags        = 0;
+  requester.es_Title        = "Example requester";
+  requester.es_GadgetFormat = "Exit";
+  requester.es_TextFormat   = "This is a try!";
+  EasyRequestArgs(NULL, &requester, NULL, NULL);
+  
+  
+  #ifdef __amigaos4__
+  DropInterface((struct Interface *)IIntuition);
+  #endif
+  
+  if (IntuitionBase)
+    CloseLibrary((struct Library *)IntuitionBase);
+    
+  return 0;
+}
+/*****************************************************************************/
+
+Come potete vedere abbiamo anche usato le direttive per la compilazione 
+condizionale, così nel caso in cui il sorgente non venisse compilato su 
+AmigaOS4, le chiamate a GetInterface() e DropInterface() verrebbero 
+ignorate dal compilatore. 
+I simboli per i quattro sistemi Amiga, impiegati ad
+esempio utilizzando il codice condizionale #if defined () sono:
+
+AmigaOS3.x :  #if defined (__AMIGA__) && !defined (__PPC__)
+AmigaOS4   :  #if defined (__amigaos4__)
+MorphOS    :  #if defined (__MORPHOS__)
+AROS       :  #if defined (__AROS__)
+
+Ad onor del vero potremmo omettere il seguente codice condizionale:
+
+#ifdef __amigaos4__
+#define __USE_INLINE__
+#define __USE_BASETYPE__
+#endif
+
+In questo caso però dovremmo impartire i simboli __USE_INLINE__ ed 
+__USE_BASETYPE__ attraverso l'opzione -D del GCC, in altri termini:
+
+gcc mioSorgente.c -o mioEseguibile -D__USE_INLINE_ -D__USE_BASETYPE_
+
+
+3.4 Differenze dei tipi tra i diversi OS Amiga
+
+Come certo saprete, il range di valori stabilito per rappresentare le 
+variabili intere e decimali cambia al variare dell'architettura
+sulla quale un sistema operativo viene eseguito. AmigaOS sin dalla 
+sua prima versione definisce inoltre altri tipi per dichiarare le 
+variabili, i quali risiedono nel file header exec/types.h. 
+E' importante notare come tali tipi risentano dell'architettura su 
+cui è nato AmigaOS, in altre parole il processore Motorola 68000, 
+il quale era una CPU 16/32bit.
+Con la versione 4 di AmigaOS ed il passaggio all'architettura PowerPC
+sono stati introdotti ulteriori tipi di supporto, lo stesso vale per
+AROS, il quale come saprete può essere eseguito su numerose 
+architetture differenti tra loro. I tipi di AmigaOS3.x sono stati 
+mantenuti per compatibilità su entrambi i sistemi, ma le relative 
+documentazioni incoraggiano ad usare i nuovi tipi nei prossimi 
+software da sviluppare.
+
+In questa sede è doveroso considerare il fatto che AmigaOS impieghi 
+un tipo particolare, APTR, nel caso in cui si sappia a priori che 
+il valore di ritorno di una funzione sia un puntatore generico. 
+Tuttavia in molti casi non si ha una simile certezza, per tale 
+motivo è comune in casi come questo impiegare come tipo di 
+ritorno ULONG, il quale rappresenta un intero a 32 bit senza segno. 
+Quest'abitudine funziona abbastanza bene per le architetture a 32bit, 
+mentre è totalmente incompatibile con quella a 64bit e successive. 
+Il motivo è piuttosto banale: nel caso di puntatori maggiori di 
+32bit si avrebbe un troncamento e dunque degli indirizzi non validi. 
+Nel caso di AmigaOS4 e MorphOS per le attuali architetture un 
+problema simile non sussiste, in quanto entrambi i sistemi impiegano 
+ancora indirizzi a 32bit. In particolare nel caso di AmigaOS4 viene 
+raccomandato l'impiego di un nuovo tipo, uint32, per fugare qualunque 
+ambiguità riguardo la dimensione del tipo che si sta per usare.
+
+Per quanto riguarda AROS invece, il problema di troncamento è una 
+situazione reale e si presenta facilmente nel caso si stesse 
+scrivendo un programma compatibile per l'architettura AROS x86-64. 
+Per tale motivo AROS introduce un ennesimo nuovo tipo, IPTR, il quale 
+è l'unico modo portabile per rappresentare una variabile che può 
+contenere sia un valore intero quanto un puntatore di qualunque 
+grandezza.
+
+Anche MorphOS supporta IPTR.
+
+Nel caso di applicazioni portabili da un'incarnazione Amiga ad 
+un'altra è bene impiegare un simile codice condizionale:
+
+#if !defined(__AROS__) || !defined(__MORPHOS__)
+    #ifdef __amigaos4__
+    #define IPTR uint32
+    #else
+    #define IPTR ULONG
+    #endif 
+#endif
+
+e mediante esso utilizzare IPTR.
+
+
+3.5 AROS, passaggio di variabili
+
+Alcune funzioni AmigaOS richiedono in molti casi il passaggio di parametri 
+variabili, impiegando per la loro manipolazione lo stack del programma 
+che utilizza tali API. Come abbiamo accennato AmigaOS stabilisce un range 
+di tipi che vanno da interi a 8bit sino ad arrivare ad interi a 64bit nelle 
+moderne incarnazioni. Tuttavia ci sono casi in cui molte CPU moderne non 
+permettono una simile gestione con qualsiasi tipo di variabile. Ad esempio 
+per alcune CPU è legale gestire sullo stack solo alcuni tipi di variabile,
+gli altri tipi vengono accettati invece attraverso i registri della CPU, altri
+casi in cui alcune CPU prevedono il passaggio di variabili solo attraverso
+i registri, e cosivvia.
+Per risolvere casi come questi, AROS impiega un particolare simbolo, STACKED, 
+il quale va preposto sia alle dichiarazioni delle variabili quanto a quelle 
+dei campi delle strutture da passare alle funzioni Amiga (come ad esempio i
+messaggi BOOPSI che verranno spiegati in seguito).
+In casi di software portabile è bene impiegare un simile codice condizionale:
+
+#ifndef __AROS__
+#define STACKED
+#endif          
+
+In modo da utilizzare STACKED senza interferire con AmigaOS3.x, AmigaOS4 
+e MorphOS.
+
+E' importante citare per completezza anche il simbolo STACK. In molte 
+dichiarazioni AROS è possibile trovare simili espressioni:
+
+STACKULONG pippo;
+
+STACKIPTR puntatore;
+
+I quali sebbene servano allo stesso scopo di STACKED, non sono tuttavia un suo
+sinonimo, difatti:
+
+STACKULONG pippo;
+
+e
+
+STACKED ULONG pluto;
+
+Non dichiarano variabili della stessa grandezza su AROS, dipende infatti 
+dall'architettura sulla quale si sta eseguendo questa incarnazione Amiga.
+Ad esempio su AROS per x86-64 STACKULONG dichiara un intero a 64bit, 
+mentre STACKED ULONG rappresenta un intero a 32bit.
+
+Il simbolo STACK è supportato anche da MorphOS.
+
+
+3.6 Programmi, Tasks, Processi
+
+In letteratura si legge spesso riguardo al concetto di processo come 
+programma in esecuzione, su Amiga è il caso di fare alcune distinzioni. 
+Un programma Amiga in esecuzione è detto "Attività", in inglese "Task". 
+Un task è in grado d'invocare quasi tutte le funzioni che il sistema 
+operativo Amiga mette a disposizione, eccetto alcune, tra le quali 
+quelle offerte da AmigaDOS. L'unico modo per eseguire tali funzioni non 
+accessibili da un semplice task è di invocarle attraverso un processo. 
+Un processo su Amiga è un Task particolare, in grado di utilizzare tutte 
+le funzioni messe a disposizione dal sistema. La differenza tra Task e 
+Processo va ricercata nella storia di AmigaOS, e in questa sede non è il 
+caso di approfondire tale argomento, basti sapere che quando lanciamo un 
+nostro programma esso sarà di solito un processo. In sostanza un 
+processo su AmigaOS è un task arricchito di altre informazioni che gli 
+permettono di utilizzare anche altre risorse, tra le quali alcune 
+funzioni di sistema. Nella pratica un task e un processo possono essere 
+identificati attraverso dei puntatori a delle strutture: la struttura 
+Task e la struttura Process. Ciò che a noi interessa in questa sede è 
+sapere che un processo (struct Process) contiene al suo interno: 
+
+- un riferimento al task con cui viene identificato 
+  da Exec (struct Task pr_Task);
+  
+- un riferimento a una porta messaggi (struct MsgPort  pr_MsgPort, 
+  vedi paragrafo 5.2);

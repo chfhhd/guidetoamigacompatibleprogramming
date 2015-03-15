@@ -1,0 +1,933 @@
+CAPITOLO 5: La comunicazione tra processi su Amiga
+
+"Message passing is faster on ami cause it just passes
+around pointers to structs[...]"
+Tom "Phantom Lord" Kennedy, comp.sys.amiga.advocacy, 5 Mag 1994
+
+"copy-on-write message passing would be really great on the Amiga,
+since you could get memory protection"
+Gavriel State, comp.sys.amiga.advocacy, 26 Feb 1992
+
+"AmigaOS definitely cannot, at least not without breaking existing software. 
+That's because an arbitrarily large chunk of memory (or even many of them, 
+if you pass a list) may be "attached" to the message structure and would 
+have to be copied to the receiver's address space. But the OS doesn't know 
+how much data actually belongs to your message. Most programmers 
+don't care much about the mn_Length field, and even if they did it wouldn't 
+work for lists." 
+Matthias Bethke, comp.sys.amiga.programmer, 18 Dic 1996
+
+
+5.1 Diversi tipi d'interazione 
+
+Finora ci siamo occupati della stesura di programmi che s'identificano 
+all'interno del sistema come fossero un piccolo universo, con le sue 
+regole e i suoi confini. L'unica interazione con l'esterno è stata 
+sin'ora quella ottenuta per mezzo di feedback grafico, ad esempio 
+abbiamo citato più volte la pressione di un bottone che viene 
+riconosciuta dal nostro programma e viene gestita in un determinato 
+modo. Il risultato di tale gestione veniva infine mostrato all'utente. 
+In altri termini abbiamo affrontato il problema dell'interazione tra il 
+programma e l'utente, adesso invece ci occuperemo dell'interazione tra 
+un programma con il sistema e con altri programmi. 
+
+
+5.2 Accenno ai segnali
+
+Il sistema Amiga avvisa un task dell'avvento di un determinato evento 
+attraverso degli indicatori chiamati Segnali. Sostanzialmente un segnale 
+è rappresentato da uno o più bit all'interno di un campo a 32bit, e un 
+tale campo viene assegnato a ciascun task. Si hanno dunque in totale per 
+ciascun task 32 segnali, 16 dei quali sono riservati, questi ultimi 
+vengono utilizzati dal sistema operativo. In realtà abbiamo già 
+incontrato e interagito con alcuni dei segnali riservati, in particolare 
+nel paragrafo 4.5.2 abbiamo messo la nostra applicazione nelle 
+condizioni di interagire nel caso in cui fossero cambiati 4 bit 
+riservati del nostro task: 
+
+while (DoMethod(app,MUIM_Application_NewInput,&sigs) != MUIV_Application_ReturnID_Quit)
+{
+  if (sigs)
+  {
+    sigs = Wait(sigs | SIGBREAKF_CTRL_C);
+    if (sigs & SIGBREAKF_CTRL_C) break;
+  }
+}
+
+Tali 4 bit sono rappresentati con il simbolo SIGBREAKF_CTRL_C. Il 
+cambiamento generico della maschera del nostro task è invece riportato 
+all'interno dell'intero sigs, utilizzando il metodo 
+MUIM_Application_NewInput. Attraverso la funzione Wait() invece diciamo 
+al sistema di mandare il nostro task in stato di Sleep e di risvegliarlo 
+solo nel caso in cui giunga la maschera SIGBREAKF_CTRL_C o una qualsiasi 
+maschera all'interno di sigs. A questo punto il funzionamento 
+dell'indicato ciclo while dovrebbe essere chiaro: fin quando 
+MUIM_Application_NewInput ritorna un valore diverso da 
+MUIV_Application_ReturnID_Quit (valore associato al gadget di chiusura 
+della finestra) allora controlla la maschera dei segnali depositata in 
+sigs. Se sigs contiene un valore diverso da zero allora chiama la 
+funzione Wait() in modo da mandare il nostro processo in Sleep e 
+risveglialo solo nel caso in cui arrivi la stessa maschera contenuta in 
+sigs, oppure quella rappresentata da SIGBREAKF_CTRL_C. In questo caso 
+esci dal ciclo. In generale, se volessimo mandare in Sleep il nostro 
+task e attuarne il risveglio solo nel caso in cui sopraggiunga il 
+segnale "3", scriveremmo qualcosa del genere: 
+
+Wait(1L<<3);
+
+In sostanza il valore 00000000000000000000000000000001 attraverso lo 
+shift a sinistra diventa 00000000000000000000000000001000, che 
+rappresenta il segnale "3". In realtà ciascun task (struct Task) 
+mantiene al suo interno più maschere per i segnali, in questa sede è 
+bene innanzitutto fare notare la maschera adibita a contenere i segnali 
+allocati per il task (tc_SigAlloc) e la maschera riservata a mantenere i 
+segnali che eventualmente il task potrebbe attendere di ricevere 
+(tc_SigWait). In altri termini un task può allocare dei segnali, dando a 
+essi un proprio significato, e attendere eventualmente il loro avvento. 
+Per questo motivo si dice che i segnali di un task riguardino il task 
+stesso. 
+
+
+5.3 Le porte e i messaggi
+
+Supponiamo di avere due processi A e B in esecuzione. Il processo A 
+vuole comunicare a B alcune informazioni, in queste condizioni abbiamo 
+bisogno di uno standard di comunicazione in modo che i dati trasmessi da 
+A abbiano un senso per B e viceversa. La maggior parte dei sistemi 
+operativi risolve questa situazione offrendo al programmatore la 
+cosiddetta comunicazione indiretta mediante porte e messaggi (IPC). 
+Nella comunicazione indiretta il processo A "compila" un messaggio con 
+le informazioni utili a B e lo invia a una porta di comunicazione. 
+Possiamo paragonare una porta di comunicazione alla casella di posta di 
+una determinata entità, in questo caso il processo B. Una volta giunto 
+il messaggio alla porta di destinazione, B potrà prelevarlo ed eseguire 
+le proprie azioni. Ci sono casi in cui il processo destinatario rimane 
+in attesa dell'arrivo di un messaggio in una porta, altri in cui il 
+mittente rimane in attesa dopo aver inviato il messaggio a una porta, in 
+questi casi si parla di comunicazione sincrona. Se l'invio e la 
+ricezione del messaggio non comportano attese si parla invece di 
+comunicazione asincrona. E' inoltre possibile che venga richiesta una 
+segnalazione dell'eventuale arrivo del messaggio, e talvolta bisogna 
+anche notificare il completamento delle azioni svolte attraverso le 
+informazioni contenute all'interno del messaggio giunto. Tutti gli OS 
+Amiga supportano i casi descritti attraverso una serie di funzioni 
+offerte da Exec. 
+
+
+5.3.1 I messaggi sugli OS Amiga
+
+Un messaggio sugli OS Amiga è composto da un header e da un corpo. 
+Attraverso l'header il messaggio viene gestito dal sistema, mentre il 
+corpo del messaggio può avere qualsiasi tipo di forma e grandezza. In 
+altri termini un messaggio Amiga è una semplice struttura composta di un 
+campo obbligatorio e altri a scelta del programmatore. Ad esempio se 
+volessimo comporre un messaggio contenente un intero potremmo scrivere: 
+
+struct MioMessaggio{
+  struct Message msg;   
+  int mioIntero;
+};
+
+In questo caso il corpo del messaggio è rappresentato dal nostro intero, 
+mentre ciò che è costante è l'header di sistema: struct Message. 
+Quest'ultima è una struttura di sistema così composta: 
+
+
+struct Message {
+  struct Node  mn_Node;
+  struct MsgPort  *mn_ReplyPort;
+  UWORD mn_Length;
+}:
+
+Il primo campo della struttura è utilizzato per agganciare il messaggio 
+a una porta. Il secondo campo, in alcuni casi facoltativo, viene 
+riempito con il puntatore a una porta di risposta nel caso in cui ci sia 
+una la necessità di rispondere con gli stessi dati (o altri) al processo 
+mittente. Il terzo e ultimo campo invece indica la lunghezza del 
+messaggio. 
+
+I messaggi negli OS Amiga vengono passati da un processo a un altro per 
+indirizzo, in altre parole quando il processo A crea e invia un 
+messaggio a B, quest'ultimo riceverà il puntatore a tale messaggio, non 
+una copia. E' evidente come in una simile situazione lo scambio messaggi 
+non è altro che la possibilità per un processo di accedere a una 
+porzione di memoria allocata e appartenente ad un altro processo. Una 
+tale implementazione è ovviamente contingente a quella della memoria 
+protetta (vedi paragrafo 2.6.1), tuttavia questa implementazione delle 
+IPC è stata mantenuta nei nuovi OS Amiga in modo da avere una certa 
+compatibilità con le precedenti applicazioni compilate per AmigaOS3.x. 
+AmigaOS3.x utilizza di solito il sistema IPC e dunque implementare un 
+diverso sistema IPC sui nuovi OS Amiga significherebbe non permettere 
+alle applicazioni compilate per AmigaOS3.x di essere eseguite su questi 
+sistemi, a meno di non usare complicati strati di emulazione. 
+
+
+
+5.3.2 Creazione, ricerca e rimozione delle porte sugli OS Amiga
+
+Nel paragrafo precedente, uno dei campi della struttura Message era 
+rappresentato da un puntatore alla struttura MsgPort, essa è la 
+rappresentazione di una porta messaggi sugli OS Amiga: 
+
+
+struct MsgPort
+{
+    struct Node mp_Node;
+    UBYTE       mp_Flags;
+    UBYTE       mp_SigBit;  
+    APTR        mp_SigTask; 
+    struct List mp_MsgList; 
+};
+
+Il primo campo mp_Node di tale struttura è l'header attraverso il quale 
+la porta viene aggiunta alle liste di sistema mantenute da Exec, mentre 
+l'ultimo campo mp_MsgList contiene un puntatore alla lista dei messaggi 
+accodati all'interno della porta. Il campo mp_SigTask accoglie il 
+puntatore al task al quale appartiene la porta, quest'ultimo rappresenta 
+nel processo di comunicazione il task destinatario, il quale dovrà 
+essere avvisato dell'eventuale arrivo di un nuovo messaggio, tutto ciò 
+viene notificato attraverso la maschera di segnali mp_SigBit. Ad ogni 
+modo è possibile modificare il comportamento della porta al momento 
+della ricezione di un messaggio, per ottenere tutto questo viene messo a 
+disposizione il campo mp_Flags, il quale nel caso generico assume lo 
+speciale valore PA_SIGNAL, mentre nel caso non si volesse notificare 
+l'arrivo di un messaggio tale campo verrebbe impostato a PA_IGNORE. 
+Nella pratica i campi di una porta messaggi non vengono quasi mai 
+allocati manualmente, se non in casi particolari. Il caso generico 
+prevede l'utilizzo della funzione: 
+
+
+struct MsgPort *CreateMsgPort( VOID ); 
+
+la quale si occupa di allocare la porta e i suoi campi in modo 
+automatico, impostando ad esempio il campo mp_Flags a PA_SIGNAL e 
+mp_SigTask al corrispondente task. 
+
+Una porta può essere privata o pubblica. Nel caso in cui le nostre 
+necessità cadessero sul secondo caso, dovremmo allora agire manualmente 
+su due sottocampi del campo mp_Node appartenente alla porta allocata con 
+CreateMsgPort(). Più precisamente sarà nostro obbligo assegnare un nome 
+simbolico e una priorità alla nostra porta in modo che essa possa essere 
+aggiunta e riconosciuta univocamente dal sistema. Ad esempio se 
+volessimo allocare la porta pubblica Pippo dovremmo scrivere: 
+
+
+struct MsgPort *pippoPort = CreateMsgPort();
+ 
+pippoPort->mp_Node.ln_Name = "Pippo";
+pippoPort->mp_Node.ln_Pri = 0;
+
+AddPort(pippoPort);   
+
+Abbiamo in altri termini assegnato alla porta il nome "Pippo" e la 
+priorità zero. Per aggiungere tale porta alla lista delle altre 
+mantenute da Exec impieghiamo quindi la chiamata alla funzione: 
+
+
+VOID AddPort( struct MsgPort *port );
+
+Nel caso di porta pubblica potremmo ricercare quest'ultima attraverso il 
+suo nome simbolico che la identifica nelle liste di Exec. Tale 
+informazione viene utilizzata come parametro per la funzione: 
+
+
+struct MsgPort *FindPort( CONST_STRPTR name );
+
+Tuttavia bisogna evidenziare come un processo non abbia un controllo 
+completo sulle porte pubbliche, difatti esse potrebbero essere rimosse e 
+cambiare in qualunque momento senza alcun avviso, per tale motivo 
+l'utilizzo di una porta pubblica dev'essere posto in una condizione di 
+privilegio, in altri termini bisogna inserire il codice di utilizzo di 
+una porta dentro un blocco delimitato dalle chiamate di sistema Forbid() 
+e Permit(). In particolare non è garantita alcuna validità della porta 
+pubblica dopo la chiamata a Permit() e dunque bisogna fare estrema 
+attenzione. 
+
+Dopo aver utilizzato la nostra porta pubblica dovremo quindi rimuoverla 
+dalla lista delle altre porte pubbliche di Exec, per ottenere tutto 
+questo viene impiegata la funzione: 
+
+
+VOID RemPort( struct MsgPort *port );
+
+
+Infine per rimuovere la porta dalla memoria, sia essa pubblica o 
+privata, viene impiegata la funzione : 
+
+
+VOID DeleteMsgPort( struct MsgPort *port );
+
+
+5.3.3 Gestione dei messaggi sugli OS Amiga
+
+La gestione dei messaggi sugli OS Amiga può avvenire in maniera sincrona 
+o asincrona, impiegando come meglio si creda le seguenti funzioni: 
+
+
+VOID             PutMsg( struct MsgPort *port, struct Message *message );
+struct Message * WaitPort( struct MsgPort *port );
+struct Message * GetMsg( struct MsgPort *port );
+VOID             ReplyMsg( struct Message *message );
+
+
+PutMsg() viene impiegata quando bisogna inviare un messaggio a una 
+porta. Tale invio potrebbe implicare la perdita del controllo della CPU 
+(cambio di contesto) da parte del processo mittente, il quale cederebbe 
+tale risorsa al processo ricevente. 
+
+Nel caso in cui fosse richiesta dal processo mittente una risposta da 
+parte del destinatario, si dovrà inserire nel campo mn_ReplyPort, 
+presente nell'header del nostro messaggio, il puntatore a un'eventuale 
+porta, la quale sarà utilizzata come "casella delle risposte". 
+Eventualmente il campo mn_ReplyPort dovrà essere configurato prima della 
+chiamata a PutMsg() nel caso in cui avessimo questa necessità. 
+
+WaitPort() permette ad un processo di attendere l'arrivo di un messaggio 
+su una determinata porta. Dunque il processo andrà in stato di Sleep nel 
+caso in cui non ci fosse alcun messaggio nella porta passata a 
+WaitPort(), mentre passerà allo stato di esecuzione nel momento in cui 
+giungerà un messaggio alla porta. In questo caso WaitPort() ritornerà il 
+puntatore a tale messaggio. Una volta giunto il messaggio sulla porta, 
+WaitPort() ritornerà il puntatore a tale messaggio, tuttavia tale 
+funzione non si occuperà della rimozione del messaggio stesso dalla 
+porta. Per rimuovere un messaggio da una porta s'impiegherà invece 
+GetMsg(). 
+
+GetMsg() ci permette di ottenere il puntatore al primo messaggio 
+residente all'interno di una porta senza alcuna attesa. In altre parole, 
+se nella porta non sono presenti messaggi, GetMsg() ritornerà NULL. Nel 
+caso in cui ci fossero messaggi, GetMsg() rimuoverà dalla porta il primo 
+messaggio arrivato, ritornando il suo puntatore. 
+
+ReplyMsg() infine viene utilizzata nel momento in cui le operazioni 
+svolte dal processo ricevente vengono completate. Se ad esempio il 
+processo destinatario, dopo aver ricevuto il messaggio, eseguisse delle 
+operazioni per le quali erano indispensabili le informazioni contenute 
+all'interno del messaggio ricevuto, in questo caso il processo 
+destinatario segnalerà il completamento delle proprie azioni al processo 
+mittente attraverso una chiamata a ReplyMsg(). ReplyMsg() serve anche a 
+restituire il controllo del messaggio (il quale come abbiamo già detto, 
+è un'area di memoria) al processo mittente, in modo che quest'ultimo 
+possa eventualmente deallocare le risorse occupate dal messaggio. In 
+altre parole viene attuata una sincronizzazione tra mittente e 
+destinatario, impiegando a questo proposito lo stesso messaggio 
+processato dal destinatario, il quale verrà restituito  al processo mittente 
+per mezzo di ReplyMsg(). ReplyMsg() impiega il campo mn_ReplyPort 
+presente nell'header del messaggio, all'interno del quale la funzione si 
+aspetterà di trovare un puntatore a una porta in cui rimandare il 
+messaggio. 
+
+
+5.3.4 Comunicazione IPC sincrona passo per passo
+
+Ritorniamo al problema iniziale: abbiamo due task A e B che vogliono 
+comunicare. Abbiamo stabilito che tale comunicazione avverrà attraverso 
+lo scambio di uno o più messaggi. Per ottenere tutto questo ciascun task 
+avrà una propria porta, che identificheremo rispettivamente con Porta_A 
+e Porta_B. 
+
+Supponiamo che il task B abbia definito un nome simbolico per la propria 
+Porta_B, ed abbia reso quest'ultima una porta pubblica. 
+
+A questo punto il task A vuole mandare un messaggio al task B, ed inizia 
+quindi a compilarne uno, inserendo la grandezza complessiva del 
+messaggio in mn_Lenght ed un riferimento alla Porta_A in mn_ReplyPort. 
+
+Il task A cerca quindi la Porta_B attraverso il suo nome simbolico, 
+impiegando FindPort(). Come sappiamo una porta pubblica può essere 
+accessibile e modificabile in qualunque momento da un task, per tale 
+motivo la chiamata a FindPort() dovrà essere compresa in un blocco 
+Forbid()/Permit(). 
+
+Il task A può adesso inviare il messaggio, utilizzando a questo 
+proposito PutMsg(), la quale richiederà come primo argomento il 
+puntatore alla Porta_B ricavato da FindPort() e il puntatore al 
+messaggio in precedenza compilato. 
+
+A questo punto il task A potrebbe voler rimanere in attesa che il 
+messaggio giunga al destinatario e che quest'ultimo termini le 
+operazioni che coinvolgono il messaggio. Per ottenere tutto questo viene 
+quindi impiegata la funzione WaitPort(), seguita da una chiamata a 
+GetMsg(), la quale rimuoverà il messaggio dalla porta. Le chiamate a 
+WaitPort() e a GetMsg() potrebbero essere incluse in un ciclo, tutto 
+dipende da quanti messaggi i due processi dovranno scambiarsi, nel 
+nostro caso stiamo considerando un unico messaggio. 
+
+Avremo a questo punto una situazione simile all'interno del programma 
+corrispondente al task A, considerando ad esempio il messaggio struct 
+MioMessaggio: 
+
+
+struct MioMessaggio
+{
+  struct Message msg;
+  int mioIntero;
+};
+
+...
+
+{//blocco di comunicazione
+  
+  struct Process *this = (struct Process *) FindTask(NULL);
+  struct MsgPort *Port_A =(struct MsgPort *) &this->pr_MsgPort;
+  struct MioMessaggio myMsg;
+
+  myMsg.mioIntero = 3;
+  myMsg.msg.mn_Length = sizeof(struct MioMessaggio);
+  myMsg.msg.mn_ReplyPort = Port_A;
+
+  Forbid();
+  {//blocco Forbid()/Permit()
+
+    struct MsgPort Port_B = FindPort("Port_B");
+
+    if (Port_B)
+      PutMsg(Port_B,(struct Message *) &myMsg);
+  }
+  Permit();
+
+  WaitPort(Port_A);
+  GetMsg(Port_A);
+}          
+
+Sicuramente i lettori più attenti avranno notato le istruzioni:
+
+struct Process *this   = (struct Process *) FindTask(NULL);
+struct MsgPort *Port_A = (struct MsgPort *) &this->pr_MsgPort;
+
+Come sappiamo un processo è una struttura contenente un riferimento a un 
+task, nel caso generico, in un'applicazione come quelle esposte in 
+questa guida, quando mandiamo in esecuzione un nostro programma esso 
+sarà rappresentato in memoria da un processo. La chiamata a FindTask() 
+con parametro NULL ritornerà semplicemente il puntatore al task 
+corrispondente al nostro programma, ma poiché il nostro programma è un 
+processo, allora tutti i campi della struttura Process che abbiamo 
+inizializzato saranno validi. Ovviamente per utilizzare 
+quest'accorgimento dovremmo avere la sicurezza che il nostro programma 
+in memoria sia un processo, ma questo accade nella maggior parte dei 
+casi... Un processo ha in se una porta messaggi assegnatagli alla sua 
+creazione, dunque anche la seconda istruzione risulta valida. 
+
+A questo punto se tutto è andato correttamente il task B avrà ricevuto 
+sulla sua Porta_B il nostro messaggio. Per vostra conoscenza sappiate 
+che il task B a questo punto avrà numerosi modi di gestire la coda dei 
+messaggi sulla propria porta (o eventualmente su altre). In questa sede 
+esporremo il procedimento offerto da MUI. 
+
+
+5.3.5 MUIM_Application_AddInputHandler e MUIM_Application_RemInputHandler
+
+Le nozioni esposte nei paragrafi precedenti ci mettono nelle condizioni 
+di risolvere il problema della comunicazione tra due processi. La 
+programmazione MUI aggiunge alle conoscenze sin'ora apprese la 
+possibilità di incapsulare il processo di comunicazione IPC secondo i 
+canoni dell'OOP, impiegando a tale proposito il metodo 
+MUIM_Application_AddInputHandler. Fondamentalmente il metodo 
+MUIM_Application_AddInputHandler ci permette di gestire l'eventuale 
+risposta da parte dal task B all'interno di un nostro metodo, invece di 
+appesantire il ciclo principale della nostra applicazione B con 
+controlli aggiuntivi (vedi paragrafo 4.5.2). Il metodo agganciato alla 
+Porta_B per mezzo di MUIM_Application_AddInputHandler dovrà ritornare 
+TRUE se ha svolto con successo le proprie operazioni, altrimenti 
+ritornerà FALSE. Definiamo innanzitutto nell'area dati della nostra 
+sottoclasse di MUIC_Application qualcosa di simile: 
+
+
+struct appData
+{
+  ...
+
+  struct MsgPort *Port_B;
+
+  ...
+
+  struct MUI_InputHandlerNode appHandler;   
+
+  ...
+};
+
+MUI_InputHandlerNode è una struttura di supporto così composta:
+
+struct MUI_InputHandlerNode
+{
+    ...
+
+    Object        *ihn_Object;
+
+    union
+    {
+      ULONG ihn_sigs;
+      
+      ...
+    
+    } ihn_stuff;
+
+    ULONG          ihn_Flags; 
+    ULONG          ihn_Method;
+};
+
+#define ihn_Signals ihn_stuff.ihn_sigs
+
+In questa sede basti mettere in evidenza che :
+
+- ihn_Object   : conterrà il puntatore ad un oggetto, per esempio 
+                 istanziato dalla nostra sottoclasse di MUIC_Application;
+- ihn_Signals  : conterrà i segnali associati alla nostra Porta_B (mp_SigBit);
+- ihn_Method   : conterrà il riferimento simbolico al nostro metodo adibito 
+                 alla ricezione dei messaggi;
+- ihn_Flags    : conterrà un valore che indicherà a MUI ogni quando dovrà 
+                 controllare la porta, di solito viene settato a 0;
+
+In queste condizioni, di solito all'interno del nostro metodo OM_NEW, 
+avremmo qualcosa del genere: 
+
+
+
+static ULONG mNew(struct IClass *cl,Object *obj,struct opSet *msg)
+{  
+  [INIZIALIZZAZIONE]
+  ...
+
+  struct appData        *data = INST_DATA(cl,obj);
+  struct Process *this = (struct Process *) FindTask(NULL);
+  
+  memcpy(data,&temp,sizeof(*data));     
+
+  data->Port_B =(struct MsgPort *) &this->pr_MsgPort;                               
+
+  ...
+
+  data->appHandler.ihn_Object   = obj;
+  data->appHandler.ihn_Signals  = 1L<<data->Port_B->mp_SigBit;
+  data->appHandler.ihn_Method   = MUIM_appSubClass_MyReplyMethod;
+  data->appHandler.ihn_Flags    = 0;
+  DoSuperMethod(cl,obj,MUIM_Application_AddInputHandler,(ULONG)&data->appHandler); 
+
+  ...
+
+  return (ULONG)obj;
+}  
+
+la descrizione è piuttosto banale, in questo nostro esempio manca solo 
+l'implementazione del nostro metodo MUIM_appSubClass_MyReplyMethod, la 
+quale potrebbe essere: 
+
+
+static ULONG mMyReplyMethod(struct IClass *cl,Object *obj,struct MUIP_appSubClass_MyReplyMethod  *msg)
+{
+  struct appData *data = INST_DATA(cl,obj);
+  ULONG ret = 0;
+
+  if (data->Port_B)
+  {
+    struct MioMessaggio *mex;
+
+    while((mex = (struct MioMessaggio *)GetMsg(data->Port_B)) != NULL)
+    {
+      if([CONTROLLO VALIDITA' DEI VALORI ALL'INTERNO DEL MESSAGGIO])
+      {
+        ...
+      }
+      
+      ReplyMsg((struct Message *)mex);        
+      ret = TRUE;
+    }
+  }
+
+  return ret;
+}        
+
+In fase di chiusura, nel metodo OM_DISPOSE rimuoveremo infine 
+l'agganciamento che abbiamo attuato, impiegando il metodo 
+MUIM_Application_RemInputHandler: 
+
+
+static ULONG mDispose(struct IClass *cl,Object *obj,Msg msg)
+{
+    struct appData          *data = INST_DATA(cl,obj);
+    
+    ...
+
+    DoSuperMethod(cl,obj,MUIM_Application_RemInputHandler,(ULONG)&data->appHandler);
+    
+    ...
+
+    return DoSuperMethodA(cl,obj,msg);
+}             
+           
+
+5.4 Introduzione ai sottoprocessi
+
+In molte situazioni può capitare di dover attendere che alcune risorse
+siano disponibili, o la necessità d'interagire con dispositivi non
+molto veloci in confronto all'esecuzione di un nostro processo. In
+condizioni simili, se il nostro programma è impegnato a svolgere un
+determinato compito, esso potrebbe non fornire più all'utente la
+capacità di eseguire altri lavori. In altre parole il programma
+manifesta uno stato di attesa, il quale viene mostrato con
+un'interfaccia grafica che non risponde all'utente con alcun output
+previsto, almeno fin quando il programma non termina il compito avviato
+in precedenza. 
+Il nostro programma è, in condizioni normali, un unico processo
+incaricato di gestire sia gli input dell'interfaccia utente, quanto
+tutte le caratteristiche che mette a disposizione dell'utente, le quali
+vengono eseguite sequenzialmente. Di solito quando tali compiti
+coinvolgono la sola CPU, e attraverso le tecniche di schedulazione
+fornite dal sistema operativo e dalle
+potenze fornite dai nuovi processori, la loro esecuzione appare
+immediata: apparentemente tutti i compiti vengono eseguiti in
+parallelo, ma non è così. In caso di risorse o di dispositivi molto più
+lenti rispetto a una CPU, ad esempio lunghe scritture su disco, o
+l'accesso a periferiche come una stampante e cosi via, il processo
+coinvolto inizierebbe un ciclo con svariati stati di attesa, in cui è
+impegnato a controllare gli eventuali permessi di accesso a queste
+risorse. Quest'ultima situazione non permette al processo di fornire
+un'adeguata possibilità di azione all'utente. 
+In situazioni come queste sarebbe meglio incapsulare un compito oneroso
+del nostro programma e farlo svolgere a un altro processo
+parallelamente, in modo tale da lasciare il processo principale libero
+di gestire altri compiti, come rispondere alle eventuali azioni
+dell'utente. Per ottenere tutto questo è possibile utilizzare la
+chiamata CreateNewProc(). La comunicazione tra programma principale e
+processo secondario in questa sede verrà descritta attraverso lo
+standard IPC spiegato nei paragrafi precedenti.
+
+
+5.4.1 Introduzione a CreateNewProc()
+
+La funzione CreateNewProc(), e la sua versione ad argomenti variabili
+CreateNewProcTags(), permettono a un programma in esecuzione di
+generare un nuovo processo che condivide principalmente le variabili
+locali, la directory corrente e la priorità con il processo principale.
+la situazione è ovviamente configurabile attraverso alcuni opportuni
+argomenti, passati attraverso tag alla funzione CreateNewProc(),
+inoltre in ciascun'incarnazione Amiga ci sono diversi tag oltre a
+quelli mantenuti per compatibilità con AmigaOS3.x, i quali potrebbero
+venire in aiuto in alcune circostanze. In questa sede introdurremo solo
+i tag necessari per la creazione e gestione di un processo in maniera
+portabile tra le diverse incarnazioni Amiga, rimandando un'analisi più
+accurata a discrezione del lettore, attraverso un'attenta lettura della
+documentazione di CreateNewProc() per il proprio sistema.
+Per la creazione di un nuovo processo avremo bisogno almeno di una
+funzione standard C che rappresenterà il nostro processo, la quale
+verrà passata come argomento (NP_Entry) alla funzione CreateNewProc().
+la dichiarazione standard della funzione da passare a CreateNewProc() è
+la seguente:
+
+ULONG subproc(STRPTR args, ULONG length)
+
+e sebbene la dichiarazione standard della funzione da passare a
+CreateNewProc() cambi sia su AmigaOS4.x:
+
+int32 subproc(STRPTR args, int32 length, APTR execbase)
+
+quanto su MorphOS:
+
+void subproc(void)  
+
+La prima dichiarazione è ad ogni modo supportata per compatibilità,
+inoltre l'unica cosa che importa al sistema è il ritorno della
+funzione, quest'ultimo dovrà corrispondere a uno dei codici AmigaDOS
+presenti in <dos/dos.h>: RETURN_OK, RETURN_WARN, RETURN_FAIL,
+RETURN_ERROR.
+
+Le opzioni riguardanti la funzione CreateNewProc() sono disponibili
+sottoforma di tag nell'header <dos/dostags.h>, si consiglia di
+consultarlo insieme all'autodoc della libreria dos.
+
+Innanzitutto poiché lo scopo di un nuovo processo nel nostro caso è di
+affidargli compiti quali l'interazione con periferiche lente, potremmo
+voler impostare una priorità di esecuzione più bassa rispetto al
+programma principale. Per ottenere tutto questo è possibile utilizzare
+il tag NP_Priority.
+Un tag di CreateNewProc() importante su MorphOS è NP_CodeType, il quale
+dovrà essere impostato al valore speciale CODETYPE_PPC, il quale
+indicherà al sistema che verrà lanciato un nuovo processo nativo PPC.
+Un altro tag di tutto rispetto, questa volta presente su AmigaOS4 è NP_Child:
+settato a TRUE questo tag avvisa il sistema che il processo da creare sarà
+figlio del processo creante. 
+
+Riassumendo potremmo scrivere qualcosa del genere:
+
+#ifndef __MORPHOS__
+#define NP_CodeType TAG_IGNORE
+#define CODETYPE_PPC TRUE
+#endif
+
+#ifndef __amigaos4__
+#define NP_Child TAG_IGNORE
+#endif  
+
+
+ULONG subProcess(void)
+{
+    ...
+
+    return RETURN_OK;
+}
+
+int main(void)
+{
+    struct Process *pr;
+    ...
+
+  
+    if (pr = CreateNewProcTags(NP_Entry, subproc,
+                                   NP_CodeType,CODETYPE_PPC,//on MorphOS
+                                   NP_Child, TRUE,          //on AmigaOS4
+                                   NP_Priority,-5, 
+                               TAG_DONE))
+    {
+        ...
+    }
+
+    ...
+
+    return 0;
+}
+
+
+5.4.2 Comunicazione asincrona, esempio pratico
+
+Supponiamo di avere una sottoclasse di MUIC_Application, e di voler
+lanciare un sottoprocesso da questa nostra classe. Tutto ciò che ci
+serve a questo punto saranno alcune strutture all'interno dell'area
+dati della nostra classe e ovviamente una funzione che verrà impiegata
+come sottoprocesso, chiamiamola subProcess(), e infine un metodo da cui
+inizializzare i dati che ci servono e chiamare CreateNewProcTags(), ad
+esempio un MUIM_MyClass_LaunchSubProc. 
+Poiché il sottoprocesso deve svolgere i propri compiti senza rallentare
+l'esecuzione del programma principale, attueremo una comunicazione
+asincrona, impiegando a questo proposito: 
+
+- una porta di comunicazione privata per le eventuali risposte che il
+  programma principale potrebbe ricevere dal sottoprocesso (myPort); 
+- la porta assegnata dal sistema al sottoprocesso come casella postale
+  in cui il processo principale invierà al sottoprocesso i messaggi;
+- una struttura da utilizzare come messaggio IPC tra il nostro programma
+  principale e il sottoprocesso (Mymsg);
+- i metodi MUIM_Application_AddInputHandler e
+  MUIM_Application_RemInputHandler discussi in precedenza (5.3.5);
+- un metodo di supporto per le eventuali risposte da parte del programma
+  principale, ad esempio un MUIM_MyClass_FreeResources;
+
+Lo svolgimento della comunicazione è identificato dal valore di una
+variabile status all'interno del messaggio IPC, e procede come segue:
+
+1) Il programma principale lancia il sotto processo chiedendogli di
+   eseguire i suoi compiti (status = PLEASE_EXECUTE_YOUR_WORK);
+2) Il sottoprocesso esegue il proprio lavoro, ma richiede al processo
+   principale qualcosa (status = MAINPROC_I_WANT_SOMETHING);
+3) Il programma principale risponde opportunamente al sotto processo
+   (status  HERE_I_GIVE_YOU_WHAT_YOU_WANT);
+4) Il sottoprocesso porta a termine le ultime azioni e avvisa il
+   processo principale di aver completato tutto (status = QUIT);
+5) Il programma principale è finalmente libero di rimuovere dalla
+   memoria le risorse non necessarie;
+
+E' importante notare come la conclusione di un sottoprocesso includa sempre
+una chiamata a Fordid() prima della canonica ReplyMsg(). Questa chiamata a
+Forbid() serve essenzialmente a dire al sistema di non eseguire un cambio di
+contesto prima che il sottoprocesso abbia concluso i propri compiti, e cioè
+l'esecuzione del codice di chiusura. Perchè effettuare una chiamata come
+questa? Pensiamo alla modalità con cui abbiamo creato il nostro
+sottoprocesso, il quale per sua natura è una sorta di estensione del processo
+principale, con il quale condivide alcune informazioni essenziali, come le
+Basi delle librerie e altro. Il processo principale potrebbe chiudersi prima
+del sottoprocesso, lasciando quest'ultimo senza una parte di dati essenziale
+al suo funzionamento, per tale motivo viene dunque impiegata la chiamata a
+Forbid(), che in altre parole dice al sistema di permettere la conclusione
+del sottoprocesso prima che eventualmente venga terminato il processo
+principale.
+Su AmigaOS4.x la chiamata a Forbid() è superflua se si usa il tag NP_Child
+impostato a TRUE: sarà infatti il sistema stesso a curarsi di non permettere
+l'uscita del processo principale prima del sotto processo da noi creato.
+Il codice è il seguente:
+
+/*****************************************************************************/
+#ifndef MEMF_SHARED
+#define MEMF_SHARED MEMF_PUBLIC
+#endif
+
+enum {   
+    PLEASE_EXECUTE_YOUR_WORK=1,
+    MAINPROC_I_WANT_SOMETHING,
+    HERE_I_GIVE_YOU_WHAT_YOU_WANT,
+    QUIT
+};  
+
+
+struct myData
+{
+    struct MsgPort              *myPort;
+    struct Process              *mySubProc;
+    struct MUI_InputHandlerNode myHandler;
+
+    ...
+};
+
+
+struct Mymsg
+{
+  struct Message  msg;
+
+  ...
+
+  LONG            status;
+};
+/*****************************************************************************/
+
+/*****************************************************************************/
+///subProcess()
+int subProcess(void)
+{
+    LONG  wrap;
+    STRPTR font;
+    struct Process *pr = (struct Process *) FindTask(NULL);
+    struct printmsg *mex = NULL;
+
+
+    #ifdef __MORPHOS__
+    struct ExecBase *SysBase = *(struct ExecBase **) 4;
+    #endif
+
+    WaitPort (&pr->pr_MsgPort);
+
+    while (!mex)
+        mex =(struct printmsg *) GetMsg (&pr->pr_MsgPort);
+
+    if (mex->status == PLEASE_EXECUTE_YOUR_WORK)
+    {
+      ...
+
+      mex->status = MAINPROC_I_WANT_SOMETHING;
+      ReplyMsg ((struct Message *)mex);
+
+      mex = NULL;
+      while ( !(mex = (struct Mymsg *)GetMsg (&pr->pr_MsgPort)) )
+          WaitPort (&pr->pr_MsgPort);     //wait for reaction from main task
+    }
+    else if (mex->status == HERE_I_GIVE_YOU_WHAT_YOU_WANT)
+    {
+      ...
+    }
+
+    ...
+
+    mex->status = QUIT;
+    #ifndef __amigaos4__
+    Forbid();
+    #endif
+    ReplyMsg ((struct Message *)mex);
+
+
+    return RETURN_OK;
+}
+///
+/*****************************************************************************/
+
+/*****************************************************************************/
+///MUIM_MyClass_LaunchSubProc
+static IPTR LaunchSubProcMethod(struct IClass *cl,Object *obj, Msg msg)
+{
+    struct myData    *data = INST_DATA(cl,obj);
+    struct Mymsg   *mex;
+
+    if (data->myPort)
+    {
+        MUI_RequestA(obj,NULL,0,
+                        (char *)"Requester",
+                        (char *)"Ok",
+                        (char *)"Just in running...",
+                     NULL);
+
+        return (IPTR) FALSE;
+    }
+
+    data->mySubProc=NULL;
+
+    if ((mex = AllocVec (sizeof(struct Mymsg),MEMF_CLEAR|MEMF_SHARED)))
+    {
+        if ((data->myPort = CreateMsgPort()))
+        {
+            if((data->mySubProc = CreateNewProcTags(NP_Entry, (ULONG) subProc,
+                                                       NP_CodeType,CODETYPE_PPC,//on MorphOS
+                                                       NP_Child, TRUE,          //on AmigaOS4
+                                                       NP_Priority,-5,
+                                                    TAG_DONE)))
+            {
+                data->myHandler.ihn_Object   = obj;
+                data->myHandler.ihn_Signals  = 1L<<data->myPort->mp_SigBit;
+                data->myHandler.ihn_Method   = MUIM_App_FreeResources;
+                data->myHandler.ihn_Flags    = 0;
+                DoSuperMethod(cl,obj,MUIM_Application_AddInputHandler,(IPTR)&data->myHandler);
+
+                ...
+
+                mex->status = PLEASE_EXECUTE_YOUR_WORK;
+                mex->msg.mn_ReplyPort = data->myPort;
+                
+                /* establish communication with sub task */
+                PutMsg (&data->printSubProcess->pr_MsgPort,(struct Message *)mex);   
+            }
+        }
+    }
+
+
+    return (IPTR) TRUE;
+}
+///
+/*****************************************************************************/
+
+/*****************************************************************************/
+///MUIM_MyClass_FreeResources
+static IPTR FreeResourcesMethod(struct IClass *cl,Object *obj,Msg msg)
+{
+    struct myData *data = INST_DATA(cl,obj);
+    IPTR ret = FALSE;
+
+    if (data->myPort&&data->mySubProcess)
+    {
+        struct Mymsg *mex = NULL;
+
+        /* wait for reply from sub proc */
+        while((mex = (struct Mymsg  *)GetMsg(data->myPort)) != NULL)
+        {
+
+            ...
+
+            if (status == MAINPROC_I_WANT_SOMETHING)
+            {
+              ...
+
+              mex->status = HERE_I_GIVE_YOU_WHAT_YOU_WANT;
+              mex->msg.mn_ReplyPort = data->myPort;
+
+              /* reply to sub proc*/
+              PutMsg (&data->mySubProcess->pr_MsgPort,(struct Message *)mex);
+
+              ret = TRUE;
+              break;
+            }
+            else if (mex->status==QUIT)
+            {
+                DoSuperMethod(cl,obj,MUIM_Application_RemInputHandler,(IPTR)&data->myHandler);
+
+                DeleteMsgPort(data->myPort);
+
+                data->myPort=NULL;
+
+
+                FreeVec(mex);
+
+                ret = TRUE;
+                break;
+            }
+        }
+    }
+
+    return ret;
+}
+///
+/****************************************************************************/  
+

@@ -1,0 +1,83 @@
+Guida alla programmazione Amiga compatibile
+
+
+Prefazione
+
+"ShInKurO, stai diventando l'ottava piaga d'egitto!"
+Turrican^, canale IRC FreeNode #AmigaITA, 17/07/2007
+
+"diventando.. ormai sei :)"
+suppah, canale IRC FreeNode #AmigaITA, 07/05/2008
+
+"I would be cash for mui lessons:)"
+kiero, canale IRC FreeNode #MUI, 05/05/2008
+
+"shinky senti te lo dissi un'altra volta, è cosa normale, buona e giusta
+provarsi pezzi di codice in piccoli programmini[...]" "[...]si scrive un 
+programmino che serve a controllare le cose così si restringono i dubbi"
+alfie, canale IRC FreeNode #AmigaITA, 2007
+
+
+I  A chi è rivolto tutto questo
+
+Questa guida presenta numerose nozioni di discipline quali l'ingegneria 
+del software, la programmazione strutturata e quella a oggetti, facendo 
+riferimento alle API disponibili sulla piattaforma Amiga. Si consiglia 
+al lettore di seguire i link che verranno di volta in volta suggeriti, 
+in modo da avere un punto di vista più ampio delle metodologie cui ci 
+riferiremo. Ciascun argomento verrà trattato talvolta in modo  
+sintetico, lasciando così al lettore il compito di un successivo 
+approfondimento nei testi di riferimento che verranno suggeriti sempre
+in questa sede. 
+
+Le conoscenze esposte in questa guida sono facilmente accessibili a coloro 
+i quali sappiano cosa sia un compilatore ed abbiano almeno delle conoscenze 
+base del linguaggio C. Nel caso in cui non si avessero tali conoscenze 
+consigliamo una lettura preventiva del seguente corso C:
+
+http://programmazione.html.it/guide/leggi/32/guida-c/
+
+Il su indicato corso riporta una sezione dedicata ai software da utilizzare
+per programmare, ai quali dovrete aggiungere quelli suggeriti nel capitolo 2
+di questa guida.
+
+
+II Ringraziamenti
+
+Questa guida non sarebbe esistita se alcune persone non avessero avuto
+la pazienza di sopportare e rispondere alle mie numerose domande 
+riguardo la programmazione su Amiga. Ringrazio anche coloro i quali tollerano
+ogni giorno l'essere i betatester dei miei programmi e quelli che mi hanno consigliato
+riguardo numerosi aspetti. Vorrei ringraziare, in ordine sparso:
+
+Alfonso "alfie" Ranieri
+Joerg "-=ONIX=-" van de Loo
+Ikka "itix" Lehtoranta
+Michal "kiero" Wozniak
+Michal "mschulz" Schulz 
+Stefano "suppah" Crosara
+Andrea "guruman" Maniero
+Fabio "falemangn" Alemagna
+Davide "Turrican^" Michelini
+Elena Novaretti
+Claudio "clros" La Rosa
+Andrea "afxgrup" Palmatè
+Joachim "zerohero" Birging
+
+
+III Bibliografia
+
+- Amiga ROM Kernel Reference Manual: Libraries, 3ª Edition (Commodore-Amiga Inc.);
+- AmigaDOS Manual;
+- Amiga User Interface Style Guide;
+- Amiga Mail Vol. 2;
+- The Amiga Guru Book, a reference manual (Ralph Babel);
+- Gli articoli della rubrica Transaction presenti sulla rivista Amiga Magazine;
+- Corso su AmigaOS (Andrea Carolfi)
+- AROS System Development Manual
+- MUI development guide
+- AmigaOS 4 Software Development Kit
+- MorphOS Software Development Kit
+- Materiale d'ingegneria del software della professoressa Stefania Gnesi
+  http://fmt.isti.cnr.it/~gnesi/matdid/IngSoftCap6_8.pdf
+

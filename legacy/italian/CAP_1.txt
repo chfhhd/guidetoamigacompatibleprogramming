@@ -1,0 +1,226 @@
+CAPITOLO 1: Introduzione
+
+"Ma c'è il problema insormontabile. Che non riguarda l'ego di alcuni o 
+i progetti commerciali ed industriali. E' semplicemente la litigiosità 
+della comunità. Essu su su, da sempre gli amighisti sono degli scassatori 
+litigiosi a livello di tifosi di calcio.
+Fin quando vivevano tutti in casa e la mamma controllava a che ora
+ritornavano e se studiavano, le cose filavano, più o meno, liscie. Nel
+momento in cui sono diventati indipendenti, hanno solo fatto guai."
+Alfonso "alfie" Ranieri, ATML, 10/12/2007
+
+
+1.1 I problemi da affrontare quando si programma su Amiga 
+
+Le problematiche per un nuovo programmatore Amiga sono molteplici: 
+
+1) Assenza di una documentazione adeguata; 
+2) Mancanza di strumenti moderni per lo sviluppo di applicativi; 
+
+La maggior parte della documentazione sui sistemi Amiga disponibile in 
+giro è piuttosto datata, per lo più in inglese, e molte parti sono ormai 
+obsolete. Nel corso di questa guida cercheremo di indirizzare il lettore 
+verso le risorse ancora valide nel panorama delle incarnazioni Amiga. In 
+sistemi quali Windows, MacOSX, e Linux esistono degli IDE (Integrated 
+Development Enviroment) con caratteristiche strabilianti, tali programmi 
+forniscono all'utente tutto il necessario per sviluppare del software in 
+modo quanto più semplice e veloce possibile. Purtroppo la piattaforma 
+Amiga non offre nulla di tutto questo, o quasi: esiste un IDE di 
+sviluppo, CubicIDE, il quale offre numerose peculiarità presenti nei 
+moderni IDE. Tuttavia CubicIDE è un software a pagamento (al momento la 
+sua licenza costa circa 100euro, un quantitativo di denaro non proprio a 
+disposizione di studenti e programmatori alle prime armi...), inoltre 
+tale software offre supporto garantito solo per AmigaOS3.x e MorphOS. 
+Non esiste dunque alcuna versione per AROS di CubicIDE. 
+In questa guida faremo qualche riferimento alle possibili alternative 
+presenti nel piccolo universo Amiga per ciò che concerne gli editor evoluti.
+Ad ogni modo, a monte di tutti questi problemi, vi è però un'enorme 
+rogna: la mentalità amighista. 
+
+
+1.2 Filosofie di ieri, filosofie di oggi: corso di azzeramento 
+
+Amiga è nata negli anni '80, ha sbalordito tutti per le caratteristiche 
+dell'epoca e tutto ciò che ne consegue... se ne sapete ancora poco 
+sull'argomento consigliamo di leggere una certa storia su www.amiga.it, 
+giusto per capire qualche caposaldo positivo della piattaforma Amiga. 
+L'utente/programmatore Amiga che si accinge ad iniziare un progetto 
+software ha un bagaglio culturale e filosofico non indifferente, il 
+quale è prodotto diretto delle vicende che ha affrontato la sua amata 
+piattaforma. Questo significa che alcune delle sue convinzioni sarebbero 
+perfettamente condivisibili se fossimo nella seconda metà degli anni 
+'80, ma risultano praticamente superate se vengono applicate nel 21esimo 
+secolo. In particolare, le antiche filosofie amighiste prevedono: 
+
+1) Assenza di una progettazione definita: il programmatore inizia a 
+stilare codice senza alcuna pianificazione di ciò che si sta accingendo 
+a scrivere; 
+
+2) Non riutilizzo delle risorse a disposizione: viene spesso sviluppato 
+del software che offre 4 o 5 funzionalità identiche ad altri software a 
+disposizione degli utenti. Dunque si tende spesso a "reinventare la 
+ruota", non impiegando API già a disposizione, ma reimplementandole di 
+volta in volta; 
+
+3) Codice "chiuso": il programmatore scrive del codice avendo in mente 
+solo se stesso come unico sviluppatore in grado di continuare il proprio 
+progetto. Tale codice non è scritto avendo in mente un possibile 
+rilascio al pubblico, non possiede alcuna documentazione esaustiva per 
+chi potrebbe andare a rileggere il codice, l'utilizzo dei commenti è 
+inoltre limitatissimo e l'ordine con il quale vengono scritte le 
+funzioni non è sempre comprensibile; 
+
+4) Assenza di collaborazione: spesso un programma per Amiga viene 
+sviluppato da un'unica persona, è molto difficile che due o più 
+programmatori Amiga riescano a collaborare tra loro su di uno stesso 
+software; 
+
+5) Assenza di portabilità: il programmatore crede che il proprio sistema 
+sia ed eterno, sia l'unico sistema valido ("E' meglio OS4! no è meglio 
+MOS...") non soggetto a mutamenti. Per tale motivo viene stilato del 
+codice piuttosto dipendente dal sistema in uso a disposizione dello 
+sviluppatore; 
+
+6) Focalizzazione sull'ottimizzazione in assembly: l'assenza della fase 
+di progettazione comporta la scrittura di codice con algoritmi poco 
+robusti, e dunque per migliorare l'efficienza del software, lo 
+sviluppatore Amiga tende a preferire sin da subito l'utilizzo del 
+linguaggio assembly come unica fonte di efficienza del proprio prodotto; 
+
+E' inutile soffermarci sul fatto che le su elencate convinzioni sono (in 
+quasi tutti i contesti) errate e non portano a nulla di buono per la 
+piattaforma Amiga. I software del 21esimo secolo -quelli che mancano su 
+Amiga e di cui tutti gli utenti sentono la necessità- sono invece 
+sviluppati secondo questi canoni: 
+
+1) Analisi e risoluzione del problema (Macroanalisi): per sviluppare un 
+software si procede prima ad un'analisi dei problemi che esso deve 
+risolvere. Tale analisi comprende tutta una serie di fasi che 
+definiranno senza alcuna ambiguità il lavoro che si dovrà svolgere per 
+ottenere il software; 
+
+2) Rispetto dei canoni di qualità: esistono delle procedure e delle 
+metriche tese a garantire la qualità di alcuni fattori di un software, 
+tra queste ricordiamo la riusabilità e la manutenibilità (= vedi punto 
+6). La riusabilità comporta il riutilizzo di funzioni e/o moduli già 
+scritti in passato, in questo modo il programmatore non implementa quasi 
+mai tali funzionalità base da zero. Ciò comporta un abbassamento del 
+tempo per la produzione del software ed un aumento della sua 
+affidabilità, in quanto i moduli di terze parti vengono utilizzati anche 
+in altri software, venendo testati, acquisendo così robustezza; 
+
+3) Codice "aperto": viene stilato del codice tenendo presente che la sua 
+consultazione potrebbe essere fatta da qualcuno che non ha alcuna idea 
+di ciò che sta leggendo. Questo significa che il sorgente possiede una 
+corposa documentazione ed abbondanti commenti all'interno del codice 
+stesso. Il codice è stilato seguendo sempre uno stesso ordine ed avendo 
+in mente un possibile rilascio al pubblico; 
+
+4) Utilizzo di più risorse umane per lo sviluppo di un software: più 
+gruppi di persone riescono a collaborare allo stesso software. Per 
+ottenere tutto questo vengono stabiliti degli standard da rispettare per 
+stilare il codice (come indettare il codice, come inserire i commenti, 
+ecc...), inoltre vengono utilizzati degli strumenti per la condivisione 
+dei sorgenti, come svn; 
+
+5) Portabilità: inutile definire il concetto di portabilità, basta dare 
+uno sguardo a progetti quali Firefox e OpenOffice, per non parlare di 
+linguaggi indipendenti come Java; 
+
+6) Mantenimento: è una fase della macroanalisi, in cui si cerca di 
+mantenere "vivo" il software sviluppato. Si possono eseguire in questa 
+fase sia la correzione dei bug (Mantenimento correttivo), l'aggiunta di 
+nuove caratteristiche (Mantenimento adattativo), ed anche 
+l'ottimizzazione di alcune parti del software (mantenimento 
+perfezionativo). Tale fase è figlia dei precedenti canoni, difatti un 
+processo di mantenimento può richiedere un ingente dispendio di risorse 
+se il software non è stato pensato bene o il codice non è stato stilato 
+correttamente, ciò comporta alle volte all'abbandono del software 
+stesso; 
+
+
+1.3 Cos'è oggi la piattaforma Amiga? Consigli sulla portabilità del 
+codice... 
+
+Questo paragrafo potrebbe sembrare ostico a chi non ha mai usato Amiga o 
+chi non ha mai sviluppato con le API presenti su questa piattaforma. I 
+dubbi del lettore dovrebbero sparire proseguendo la lettura di tutta 
+questa guida, dunque non vi preoccupate se all'inizio non capirete 
+molto. 
+
+Cos'è la piattaforma Amiga? Bisogna riassumere in una sola frase più di 
+vent'anni di storia Amiga, dunque saremo brevi: la piattaforma Amiga 
+oggi è la combinazione di quattro sistemi operativi apparentemente 
+indipendenti, la cui longevità è intrinsecamente interconnessa. I 
+sistemi operativi cui ci riferiamo sono: 
+
+- AmigaOS3.x: http://it.wikipedia.org/wiki/AmigaOS#AmigaOS3.x 
+- AmigaOS4: http://it.wikipedia.org/wiki/AmigaOS#AmigaOS4.x 
+- MorphOS: http://it.wikipedia.org/wiki/MorphOS 
+- AROS: http://it.wikipedia.org/wiki/AROS 
+
+Viste le condizioni nelle quali versano tali incarnazioni Amiga
+è bene soffermarci sul perchè vorremmo sviluppare qualcosa solo per una 
+di queste incarnazioni, quando potremmo farlo per tutte e quattro. Se il 
+nostro scopo è quello di scrivere software per la piattaforma Amiga e la 
+piattaforma è, nel nostro caso, il risultato della combinazione di 
+queste quattro incarnazioni, non conviene escluderne nessuna. Ciascuna 
+incarnazione potrebbe infatti prevalere sulle altre per un motivo o per 
+un altro, ed il nostro software si troverebbe senza un sistema sul quale 
+girare, in altre parole paradossalmente il nostro "programma Amiga" 
+diventerebbe un software NON per "Amiga". La possibilità per il software 
+di essere eseguito su più incarnazioni Amiga lo rende intrinsecamente 
+più completo: più supporto per diverse piattaforme comporta un'utenza 
+maggiore e dunque più feedback e testing sulle sue funzionalità. Ciò che 
+ne consegue è un incremento della robustezza, affidabilità, completezza 
+ed efficienza complessiva del programma in sviluppo... Scrivere codice 
+"multipiattaforma Amiga" non è complicato come potrebbe sembrare, 
+bisogna però seguire degli accorgimenti: 
+
+1) MUI: 
+    http://aminet.net/dev/mui/mui38dev.lha ; 
+    http://www.amigamagazine.info/am_73.html (Rubrica Transaction) ; 
+
+    Innanzitutto la scelta delle API per costruire un'interfaccia grafica 
+    moderna (e cioè in cui non bisognerà implementare da zero alcun gadget 
+    base o stabilire le politiche per la disposizione degli elementi 
+    -Layout- o esaurirsi per capire come "interconnettere" oggetti grafici)
+    deve ricadere su MUI, o Magic User Interface, invece che su altre soluzioni. 
+    Le API MUI sono disponibili per tutte le incarnazioni Amiga, 
+    questo fatto rende MUI una scelta obbligata; 
+
+2) SDI: 
+    http://sourceforge.net/projects/sditools/ ; 
+    
+    Ciascuna incarnazione Amiga ha ripreso lo sviluppo delle API di AmigaOS3.1 e le 
+    ha estese in modo differente. Si ha dunque su ciascuna incarnazione un 
+    gruppo di API comune, un gruppo di API aggiornate ed incompatibili tra 
+    loro, un'altra parte di API nuove, del tutto incompatibili e 
+    probabilmente non presenti da un'incarnazione ad un'altra. Per quanto 
+    riguarda il secondo caso, alcune peculiarità di AmigaOS 3.x come 
+    l'implementazione del dispatcher delle classi BOOPSI, il sistema di 
+    callback hook, ecc... variano da incarnazione ad incarnazione. Per scrivere 
+    del software compatibile per ciascuna incarnazione sono state messe a 
+    disposizione    delle macro chiamate collettivamente SDI Tools. Attraverso le 
+    SDI è possibile scrivere librerie, ed altre parti vitali del proprio software 
+    in maniera portabile, senza conoscere per forza come una determinata 
+    cosa sia stata ad esempio reimplementata su AROS piuttosto che su 
+    AmigaOS4, ma solo conoscendone le basi comuni.
+    
+
+3) Codice condizionale isolato: 
+    
+    Abbiamo appena preso atto che ci sono delle nuove funzionalità su ciascuna 
+    incarnazione Amiga che potrebbero essere non presenti sulle rimanenti incarnazioni. 
+    Nel caso in cui si volessero usare queste nuove API il consiglio sarebbe quello di 
+    utilizzare codice condizionale (in linguaggio C tale codice è delimitato 
+    da istruzioni quali #ifdef, #elif, #else, #endif), all'interno delle 
+    funzioni vitali del software, o addirittura isolare tali parti in 
+    funzioni e/o file separati da includere nella compilazione solo 
+    per una determinata incarnazione piuttosto che per un'altra; 
+
+    Tra i software Amiga dal codice aperto e liberamente consultabile 
+    abbiamo Yam, SimpleMail, Scout, le classi MUI TextEditor, BetterString, 
+    NListxxx. Tutti questi programmi, utilizzati praticamente da ogni utente 
+    Amiga, sono sviluppati tenendo presente i su indicati tre punti; 
+

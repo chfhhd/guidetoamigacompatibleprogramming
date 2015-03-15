@@ -1,0 +1,513 @@
+APPENDICE B: Subversion su Amiga
+
+"And given how Amiga software looks today, it appears to me that not
+everyone who should have read this book really did so."
+Olaf Barthel riguardo il libro  "The User Interface Style Guide", 26-11-1996 comp.sys.amiga.programmer
+
+"It's really high time the RKMs are taken care of :( "
+Olaf Barthel comp.sys.amiga.programmer 12-09-1997
+
+
+B.1 Introduzione
+
+Subversion è un insieme di programmi che permettono a diversi
+sviluppatori di lavorare contemporaneamente ad uno o più file.
+L'utilizzo di Subversion è consigliato anche in progetti in cui
+lavorerà una singola persona, poiché l'utilizzo di questi programmi
+comporta una serie di vantaggi non indifferenti:
+
+- La possibilità di modificare qualsiasi file in tempo reale da
+  qualsiasi postazione;
+- La possibilità di mantenere sincronizzate diverse versioni su
+  differenti macchine automaticamente e senza occuparsi di copiare da una
+  macchina a un'altra la versione più aggiornata;
+- La possibilità di ritornare a revisioni precedenti del proprio lavoro
+  in qualsiasi momento, invece che impazzire a ricordarsi quali modifiche
+  si sono fatte da un arco di tempo in poi;
+
+Possiamo dunque definire Subversion come un insieme di programmi per la
+gestione pulita e trasparente dei propri lavori.
+
+L'interazione tra diversi utenti con uno stesso progetto avviene
+attraverso un server principale, il quale accoglie i file del progetto
+con cui si sta collaborando. Un utente scarica sul proprio computer una
+copia dei file del progetto cui è interessato, esegue eventualmente le
+proprie modifiche e le invia al server principale, Subversion si
+occuperà quindi di integrarle correttamente con la versione del
+progetto residente sul server.
+
+
+B.2 Cos'è un repository
+
+Subversion è un sistema per la condivisione delle informazioni che opera
+utilizzando un archivio di dati, in gergo "repository".  Un repository
+memorizza le informazioni gerarchicamente, utilizzando come sui nostri
+computer dei file e delle directory. Uno o più computer possono
+connettersi al repository e leggere o scrivere questi file. Ovviamente
+il repository si trova su un server remoto.
+
+
+B.3 Cos'è una revisione
+
+Uno dei concetti su cui si fonda il funzionamento di Subversion è quello
+della revisione (revision). Supponiamo di avere sul nostro Amiga un
+file di testo, pippo_r0.txt, e di andarlo a modificare, salvando poi il
+file modificato con un altro nome, per esempio pippo_r1.txt. Avremo in
+questa situazione due file, distinti dal fatto che il secondo
+rappresenta una versione più aggiornata del primo. Il file pippo_r0.txt
+possiamo definirlo la revisione 0 del nostro file, mentre pippo_r1.txt
+è identificabile come la revisione 1 dello stesso file.
+Una revisione è dunque una copia, o meglio, una "fotografia" (snapshot)
+di un file in un determinato momento della sua esistenza. Ogni
+qualvolta inviamo con successo dei cambiamenti sui file di un progetto
+gestito su un server da Subversion, il repository si occuperà di
+creare una revisione dei file prima delle nostre modifiche, in modo
+tale da permetterci di recuperare eventualmente dei lavori andati
+perduti accidentalmente. Questo è uno dei punti di forza di progetti
+che impiegano Subversion: la possibilità di recuperare in qualsiasi
+momento una revisione di uno o più file di un progetto senza tenere sul
+nostro computer copie differenti da gestire manualmente.
+Come accennato, chi svolge le operazioni di mantenimento e controllo 
+delle revisioni è il repository, il quale ricorda qualsiasi cambiamento 
+che è stato apportato al suo interno: si terrà conto di ogni variazione 
+apportata a ogni file e directory.
+Quando un computer legge i dati dal repository, normalmente vede solo
+l'ultima revisione dell'albero delle directory. In realtà si ha anche
+la possibilità di vedere una revisione precedente dell'albero delle
+directory. 
+
+
+B.4 Collaborare in progetti che utilizzano Subversion
+
+Per collaborare a un progetto che utilizza Subversion dovrete
+innanzitutto avere un account sul server che ospita il progetto e
+installare il pacchetto Subversion sul vostro Amiga. Di solito
+l'insieme di questi programmi si trova su aminet, os4depot e altri siti
+di questo genere.
+
+
+B.5 Il comando SVN
+
+La suite Subversion contiene una serie di comandi da impartire
+attraverso Shell, uno dei principali è SVN.
+Il comando SVN permette di svolgere la maggior parte delle azioni comuni
+che servono per collaborare in un progetto già avviato. 
+Particolare rilevanza ha la versione di svn e il server con cui si
+interagirà. Più precisamente alcuni nuovi server, come code.google.com,
+richiedono un'identificazione attraverso SSL, il quale è supportato
+dalla versione Amiga 1.7 di Subversion (porting della versione 1.1.4),
+dunque se avete una versione antecedente alla 1.7 non potrete accedere
+ai progetti che risiedono su questi server dal vostro Amiga.
+Come accennato, il comando svn permette un'interazione abbastanza
+completa con progetti già avviati, utilizzando opportunamente
+un'opzione tra quelle offerte da questo comando. Le opzioni impiegate
+più frequentemente sono:
+
+- checkout (o co): permette di scaricare sul proprio harddisk tutti i
+                   file di un progetto;
+- diff           : riporta le differenze tra la revisione locale
+                   (harddisk) e quella ufficiale sul repository;
+- update (o up)  : aggiorna all'ultima revisione la copia dei file di un
+                   progetto sul proprio harddisk;
+- resolved       : avverte il server che abbiamo eliminato i possibili
+                   conflitti che erano presenti nella nostra copia locale
+                   che impedivano di inviare/integrare le proprie 
+                   modifiche al progetto residente sul repository;
+- revert         : permette di ripristinare uno o più file locali
+                   sostituendoli con i file presenti sul repository;
+- add            : indica quali nuovi file dovranno essere aggiunti al
+                   progetto sul repository;
+- delete         : indica quali file dovranno essere eliminati dal
+                   progetto sul repository;
+- commit         : invia le proprie modifiche al repository che si
+                   occuperò di integrarle;
+
+
+B.5.1 Checkout, scaricare i sorgenti di un progetto
+
+Come abbiamo accennato, i progetti gestiti con Subversion risiedono in
+un server che supporta questa suite di programmi. Tra i server più noti
+abbiamo quelli forniti dai portali sourceforge.net e code.google.com,
+il primo accoglie e accetta per lo più progetti software, mentre il secondo 
+ospita anche progetti che non riguardano per forza i sorgenti di un software,
+ma anche lavori come documentazioni e guide.
+
+Supponiamo di voler collaborare a un progetto che risiede sul
+portale sourceforge, ad esempio NoWinED. La pagina web cui fa capo
+questo progetto è:
+
+http://sourceforge.net/projects/nowined/
+
+la pagina presenta una serie di scelte da fare dal browser, tra le quali
+in alto è presente il link a "Code". Tale link porta a un menu
+javascript sul quale vengono elencate, tra le altre voci, SVN e SVN
+Browser. Il secondo è semplicemente un modo per visualizzare le parti
+di codice che compongono il progetto direttamente dal browser, mentre
+il primo link è ciò a cui siamo interessati. Dopo aver selezionato il 
+link SVN dal sito, entreremo in una pagina che visualizzerà un altro link 
+particolare preceduto dal comando svn. Tale stringa è ciò che digiteremo 
+in seguito sulla nostra Shell. 
+Attenzione, svn seguito dall'opzione co creerà dentro la directory
+corrente su cui si trova la Shell una directory contenente tutti i file
+del progetto a cui si sta accedendo, dunque prima di digitare svn
+bisogna posizionarsi da Shell esattamente sul percorso in cui vogliamo
+che venga creata questa directory. 
+A questo punto scriveremo su Shell:
+
+svn co https://nowined.svn.sourceforge.net/svnroot/nowined nowined
+
+Dopo aver digitato questo comando il programma svn scaricherà dal sito
+tutti i file necessari a creare una copia di lavoro del progetto cui si
+parteciperà, nel nostro caso tutti i file verranno inseriti nella
+directory nowined.
+
+Abbiamo dunque introdotto un primo parametro del comando svn, co, o
+anche checkout, il quale serve dunque per scaricare da un repository 
+tutti i file che compongono un progetto, creando automaticamente 
+tutte le directory necessarie.
+
+Tipicamente i file a cui siamo interessati sono all'interno della
+directory nomeDelProgetto/trunk/. Ogni progetto ha ovviamente una
+propria struttura delle directory all'interno di trunk, per esempio
+NoWinED ha al momento due directory dentro trunk.
+
+Il comando svn crea inoltre in ciascuna directory che "monitora"
+un'ulteriore directory privata, chiamata ".svn", della quale al momento
+non ci occuperemo. Basti tenere a mente che le directory dal nome ".svn" 
+servono a Subversion per svolgere i propri compiti e non vanno
+modificate ne cancellate.
+
+
+B.5.2 Diff, visualizzare un'anteprima delle differenze tra file locali e
+revisione sul repository
+
+Dopo aver modificato uno o più file di un progetto, prima di inviare al
+repository le proprie modifiche, si potrebbe sentire la necessità di
+visualizzare dal un punto di vista globale tutte le modifiche che
+abbiamo apportato al progetto. Per ottenere tutto questo il programma
+svn può generare un output che visualizzi tutte le nostre modifiche 
+in confronto all'ultima revisione del progetto presente sul server.
+ 
+Inoltre di solito ogni progetto ha delle figure a cui bisogna fare capo
+prima di procedere all'invio delle proprie modifiche. Tali persone
+potrebbero richiedere di analizzare le vostre modifiche prima di
+un'eventuale integrazione con il progetto. 
+
+Per ottenere un file contenente le modifiche che abbiamo apportato 
+basterà digitare da Shell, posizionandoci all'interno della directory 
+in cui è stato scaricato il progetto con svn:
+
+:>svn diff >ram:diff.txt
+
+In questo modo otterremo dentro RAM: il file diff.txt che conterrà ciò
+di cui abbiamo bisogno per tranquillizzare i gestori del progetto a cui
+vogliamo collaborare.
+
+L'output dell'opzione diff presenta una simile sintassi:
+
+Index: file2
+===================================================================
+--- file2   (revision 46)
++++ file2   (working copy)
+@@ -1,7 +1,12 @@
+
+ 
+-  LINEA CANCELLATA
++  LINEA AGGIUNTA
+ 
+le linee cancellate rispetto alla copia sul repository sono precedute da 
+un -, mentre le linee aggiunte sono precedute da un +.
+
+
+B.5.3 Update, aggiornare i propri file locali all'ultima versione
+
+E' buona norma, prima di effettuare l'invio delle proprie modifiche al
+server principale, sincronizzare i file presenti sul nostro computer
+con quelli ufficiali residenti sul repository del progetto a cui stiamo
+collaborando. L'aggiornamento preventivo potrebbe risparmiare eventuali
+problemi d'incompatibilità tra i file locali e quelli sul repository e
+soprattutto permette di verificare se le nostre modifiche siano o meno
+assonanti con l'ultima versione del progetto a cui stiamo collaborando.
+Per aggiornare la nostra copia di lavoro con quella presente sul repository
+basta posizionarsi da Shell dentro la directory che contiene i file del 
+progetto a cui stiamo collaborando e scrivere:
+
+svn update
+
+o anche:
+
+svn up
+
+L'opzione update (e up) permette quindi di scaricare i file più
+aggiornati dal server che mantiene la versione ufficiale del progetto a
+cui vogliamo collaborare. Subversion si occuperà di sincronizzare tutti
+i file se tutto è andato a buon fine.
+Se volessimo invece recuperare dal server una particolare revisione di
+uno o più file dovremmo invece digitare:
+
+svn up -r numeroRevisione
+
+In questo modo potremmo ad esempio recuperare un file che
+accidentalmente abbiamo sovrascritto sul repository stesso in modo da
+ripristinare eventualmente una modifica che avevamo effettuato
+parecchie revisioni precedenti e andata perduta nelle revisioni più
+recenti.
+
+
+B.5.4 Resolved e Revert, risolvere i conflitti
+
+Una situazione abbastanza comune quando si collabora a un progetto con
+Subversion è l'eventualità di incorrere in conflitti. Un conflitto
+avviene quando è stato modificato localmente un file che a sua volta è
+stato cambiato anche nella sua versione ufficiale sul repository.
+Il comando svn durante la procedura di aggiornamento ci avverte di
+eventuali conflitti attraverso una particolare simbologia. Se ad
+esempio fossero stati aggiornati tre file sul repository, due dei quali
+fossero stati modificati anche in locale potremmo avere una situazione
+simile, visualizzata come output su Shell:
+
+:>svn update
+U  file1
+G  file2
+C  file3
+Updated to revision 46.
+
+
+Possiamo notare tre codici di output: U, G e C. U indica che i file
+locali sono stati aggiornati con successo, G indica che le modifiche
+sul server sono state integrate con successo alle nostre modifiche,
+mentre C indica che c'è stato un conflitto da risolvere manualmente
+prima di provare a inviare le modifiche al repository.
+Subversion si comporta diversamente secondo la natura del conflitto
+incontrato. 
+Nel caso di modifiche minori, Subversion potrebbe considerare tali
+cambiamenti integrabili facilmente alla versione ufficiale sul repository, 
+a tale scopo il programma inserisce dei marcatori di conflitto, i quali
+non sono altro che stringhe speciali di testo che delimitano gli
+"estremi" del problema all'interno del file. In questo modo Subversion
+rende visibili le modifiche problematiche che possono essere integrabili. 
+In altri termini avremo all'interno del file incriminato una situazione di
+questo genere: 
+
+<<<<<<< .mine
+NOSTRE MODIFICHE
+=======
+MODIFICHE UFFICIALI
+>>>>>>> .r2
+
+Nel caso di conflitti più estesi, per ogni file in cui si è rilevato un 
+problema, Subversion mette nella propria copia di lavoro tre file
+extra che non sono sotto il controllo del programma:
+
+file.mine : questo è il file che c'era nella copia di lavoro prima
+            dell'aggiornamento. Tale file contiene le ultime modifiche 
+            fatte e nient'altro. (Se Subversion considera il file 
+            non integrabile, allora il file .mine non viene creato,
+            poiché potrebbe essere identico al file di lavoro);
+
+file.OLDREV : questo è il file di cui si è fatto il checkout prima delle
+              ultime modifiche che abbiamo effettuato;
+
+file.NEWREV : questo è il file che svn ha appena ricevuto dal server
+              quando si è fatto l'aggiornamento della copia di lavoro;
+
+A questo punto, Subversion non permetterà di inviare al server eventuali
+modifiche del file finché non verranno rimossi i tre file temporanei.
+
+Bisognerà dunque decidere come intervenire per risolvere i conflitti:
+non dovremo far altro che scegliere la modifica più appropriata,
+cancellando quella che scarteremo, oppure integrare in un solo
+blocco/file entrambe le modifiche. 
+E' possibile anche decidere di scartare le proprie modifiche in favore 
+di quelle presenti nella revisione del file sul server, per ottenere 
+tutto questo basterà digitare:
+
+svn revert file
+
+Dunque con l'opzione revert rimuoveremo localmente le nostre modifiche
+al file e accoglieremo localmente la versione del file presente sul
+repository.
+
+Dopo aver risolto i conflitti basterà digitare:
+
+svn resolved
+
+per segnalare al repository che abbiamo risolto tutto.
+
+
+B.5.5 Add e delete, aggiungere e rimuovere file 
+
+Nell'eventualità che si siano creati nuovi file da voler integrare al
+progetto al quale si sta collaborando, svn offre l'opzione add. Con add
+si segnala che al prossimo invio di modifiche ai file presenti sul
+repository, verranno aggiunti e inviati anche i nuovi file. 
+I gestori di un progetto potrebbero voler visionare questi nuovi file,
+dopo aver utilizzato add, se verrà invocato svn diff, l'output di
+questa opzione visualizzerà tra i cambiamenti apportati anche il
+contenuto dei nuovi file.
+Nel caso invece volessimo segnalare a Subversion la necessità di
+rimuovere alcuni file dal progetto a cui stiamo collaborando dovremo
+digitare:
+
+svn delete fileDaCancellare
+
+
+B.5.6 Commit, invio e integrazione delle modifiche
+
+Se tutti i passi sin ora descritti sono andati a buon fine, e i gestori
+del progetto hanno accettato di buon grado le vostre modifiche
+attraverso l'invio delle differenze (diff), è arrivato il momento di
+inviare le vostre modifiche al repository. Per ottenere tutto questo
+basterà posizionarsi da shell sulla directory che contiene i file del
+progetto e digitare:
+
+svn commit -m "commentoAlleMieModifiche"
+
+Il flag -m indica a svn un commento da allegare alle modifiche che si
+stanno inviando al repository ufficiale, non obbligatorie, ma
+caldamente consigliate in modo da far capire agli altri in cosa
+consistono i nostri cambiamenti. Se si omette il flag -m verrà aperta
+una finestra del programma ED in cui si dovrà inserire il proprio
+commento alla modifica.
+A questo punto verrà richiesta la password di root che di solito non si
+possiede, basterà digitare semplicemente invio, dopodiché verranno
+richieste solo la prima volta la vostra userid (uguale a quella del
+vostro account sul server), e una password (che nel caso di SourceForge
+sarà la password del vostro account, mentre nel caso di Code.Google
+sarà quella fornita a voi dall'amministratore del progetto).
+In questo modo i vostri cambiamenti rappresenteranno l'attuale revisione
+presente sul repository.
+
+
+B.6 SvnAdmin, creazione di propri progetti
+
+Fin'ora ci siamo occupati di interagire con progetti già avviati. Nel
+caso in cui volessimo creare da zero un nuovo progetto che utilizzi
+Subversion dovremo invece impiegare un altro strumento dell'omonimo
+pacchetto, il comando svnadmin.
+Tuttavia, prima di utilizzare questo comando è bene esporre delle
+premesse riguardanti la scelta del server da impiegare per il proprio
+progetto e la struttura directory che si andrà a creare.
+
+
+B.6.1 Server custom o già preparati?
+
+E' possibile creare un proprio progetto che utilizzi Subversion che
+impiega uno spazio generalmente fornito dal proprio ISP o da altri
+servizi come Altervista, tuttavia una simile scelta comporta numerosi
+rischi e limitazioni. Il più grande problema relativo alla scelta di un
+server del genere è l'obbligo di dover installare il pacchetto Apache,
+il quale serve in questo caso per limitare l'accesso ai visitatori, in
+modo che l'amministratore del server (cioè noi) sia l'unico a poter
+cancellare eventualmente il repository. Senza Apache chiunque potrebbe
+distruggere tutti i nostri lavori, inoltre bisogna avere a priori la
+conoscenza del pacchetto Apache.
+
+Per fortuna esistono dei portali che mettono a disposizione appositi
+server pronti per essere utilizzati con Subversion, tra essi i più
+conosciuti sono sicuramente SourceForge e Code.Google. Ciascuno di
+questi portali permette all'amministratore di impostare facilmente le
+regole di accesso ai propri progetti, configurare la visibilità dei
+file appartenenti al progetto (per esempio se avessimo un progetto
+close source non vorremmo sicuramente dare l'accesso ai suoi sorgenti a
+chiunque), la rimozione e l'aggiunta di utenti che collaborano al
+progetto, e molto altro.
+
+Si hanno alcune differenze tra SourceForge e Code.Google: 
+
+- SourceForge permette di inviare i dati impiegando la propria password
+di account sourceforge, mentre Code.Google prevede una password comune
+auto generata che conosce solo l'amministratore;
+
+- SourgeForge non accetta progetti che non riguardino la programmazione,
+in altre parole all'interno dei repository di SourgeForge vengono
+accettati solo file sorgenti e affini, difficilmente verranno accettati
+file di natura diversa da questi. Inoltre si è obbligati a scegliere
+una licenza tra quelle elencate o proporne una propria, ma licenze
+quali le Creative Commons non sono ammesse da SourgeForge. Tutto questo
+non esiste su Code.Google;
+
+-Code.Google permette l'interazione con il suo server attraverso SSL,
+dunque versioni precedenti alla 1.7 di Subversion su Amiga non
+funzioneranno con Code.Google, mentre su SourceForge non si hanno
+(ancora) questi problemi;
+
+-Code.Google fornisce all'utente per ogni progetto creato un albero
+delle directory tipico di un repository SVN, mentre SourceForge
+richiede più attenzione in quando sarà l'utente stesso a dover creare
+il proprio albero delle directory standard;
+
+Una volta scelto il portale di cui usufruire e aver creato il necessario
+account, il sito vi fornirà un'URL che rappresenterà la homepage del
+vostro progetto (vedi paragrafo B.5.1), in essa come di consueto
+troverete il link che verrà impiegato con il comando svn (vedi
+paragrafo B.5.1) e anche con il comando svnadmin. Per esempio se il 
+progetto è stato registrato come "mioprogetto" avrete con SourgeForge:
+
+https://nowined.svn.sourceforge.net/svnroot/mioprogetto
+
+mentre con Code.Google avrete:
+
+https://mioprogetto.googlecode.com/svn/trunk
+
+
+B.6.2 Preparazione dei file necessari e creazione del repository
+
+Per creare il nostro repository è necessario effettuare delle azioni da
+Shell. Innanzitutto è bene posizionarsi su RAM:
+
+:>cd ram:
+
+creiamo a questo punto le directory che ospiteranno temporaneamente il
+nostro progetto:
+
+:>makedir temp
+:>makedir temp/mioprogetto
+
+Se il server scelto è fornito da SourgeForge a questo punto bisognerà
+creare altre directory:
+
+:> makedir RAM:temp/mioprogetto/branches
+:> makedir RAM:temp/mioprogetto/tags
+:> makedir RAM:temp/mioprogetto/trunk
+
+Non è obiettivo di questa guida esporre in modo approfondito l'utilizzo
+di queste tre directory, dunque per ulteriori informazioni rimandiamo
+alla guida completa per Subversion
+(http://svnbook.red-bean.com/nightly/it/svn-book.html), basti sapere
+che la directory trunk conterrà tutti i file del vostro progetto,
+mentre le directory branches e tags rimarranno (per adesso) vuote.
+Le directory branches, tags, e trunk non sono in realtà richieste da
+Subversion, esse rappresentano semplicemente una convenzione comune 
+che molto probabilmente adotterete in seguito anche voi.
+
+E' arrivato il momento di creare una directory temporanea di
+destinazione (repository temporaneo):
+
+:>makedir ram:svnroot
+
+A questo punto potete inserire tutti i file del vostro progetto
+all'interno di ram:temp/mioprogetto/trunk/. Effettuato quest'ultimo
+passo è adesso possibile creare il repository reale:
+
+:> svnadmin create /ram/svnroot/repos
+
+Infine bisogna importare nel repository remoto tutti i file che abbiamo
+fin'ora creato, per ottenere tutto bisognerà avvalersi dell'URL del
+nostro server SVN (paragrafo B.6.1):
+
+:>svn import /ram/temp/mioprogetto URL_DEL_VOSTRO_PROGETTO -m "import
+iniziale"
+
+Durante questi passaggi è possibile che venga richiesta la procedura di
+login che abbiamo già descritto (paragrafo B.5.6). 
+Abbiamo così finalmente ottenuto il repository per il nostro progetto,
+non rimane altro da fare che trovare un opportuno spazio sul nostro
+harddisk e digitare il già conosciuto:
+
+:>svn co URL_DEL_VOSTRO_PROGETTO mioprogetto
+
+La directory creata sull'harddisk sarà come di consueto la copia locale
+del nostro progetto residente sul repository remoto.
+Le directory su RAM: erano temporanee e dunque non bisogna più curarsi 
+di esse.
