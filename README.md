@@ -20,7 +20,7 @@ Note that the original version of this guide was done in Italian and then transl
 
 For converting the guide into e.g. HTML the Pandoc document converter is recommended:
 
-	pandoc --mathml --highlight-style tango -s -t html CAP_0.md CAP_1.md CAP_2.md CAP_3.md CAP_4.md X_APP_B.md > guide.html
+	pandoc --highlight-style tango -s -t html CAP_0.md CAP_1.md CAP_2.md CAP_3.md CAP_4.md X_APP_B.md > guide.html
 	
 For convenience a HTML version is part of this repository.
 
