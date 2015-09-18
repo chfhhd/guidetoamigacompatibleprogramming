@@ -2550,15 +2550,3 @@ without getting us mad trying.
 
 It is suggested to read the mui.h header to find all the available MUI shortcuts and
 learn when they can be used.
-
-## 4.12 OM_DISPOSE
-
-## 4.13 MUIM_Setup and MUIM_Cleanup
-
-## 4.14 MUIM_AskMinMax
-
-## 4.15 MUIM_Show and MUIM_Hide
-
-## 4.16 MUIM_Draw
-
-## 4.17 MUIM_HandleInput
