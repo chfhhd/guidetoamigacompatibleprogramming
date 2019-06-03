@@ -3,32 +3,32 @@
 *"Neither PC, nor Mac, nor Amiga have invented the concept of mouse-driven
 GUI, but in 1985 Amiga offered certainly its most interesting and complete
 implementation."*
-Massimo Tantignone, "VisualPrefs and the Amiga GUI: tips and tricks", ??/01/2000 
+Massimo Tantignone, "VisualPrefs and the Amiga GUI: tips and tricks", ??/01/2000
 
-*"Design beautiful Gadgets, Menus, Requesters. Think simplicity and elegance. 
-Always remember the fourth grader, the sophisticated user, and the poor 
+*"Design beautiful Gadgets, Menus, Requesters. Think simplicity and elegance.
+Always remember the fourth grader, the sophisticated user, and the poor
 soul who is terrified of breaking the machine."*
 Robert J. Mical, Amiga Intuition Reference Manual
 
-*"In my opinion, neither a programmer nor the operating system shall 
-define how GUI elements shall look. The only person who knows the best 
+*"In my opinion, neither a programmer nor the operating system shall
+define how GUI elements shall look. The only person who knows the best
 choice is the user of an application.
 That's what MUI tries to accomplish. The user of a MUI application
 can decide if he wants to have standard system scrollers or absolutely
 fancy designed knobs sliding on a stony background pattern."*
 Stefan Stuntz, comp.sys.amiga.programmer, 13/08/1993
 
-*"[...]If you had read the MUI docs more carefully, you would have noticed that 
-all MUI classes are subclasses of rootclass (since every BOOPSI object 
-is a subclass of rootclass)[...]" 
+*"[...]If you had read the MUI docs more carefully, you would have noticed that
+all MUI classes are subclasses of rootclass (since every BOOPSI object
+is a subclass of rootclass)[...]"
 "[...]Commodore implemented a gadget class and an image class (with several
 sub classes) and instances of these (and only these) classes are
 sometimes called by input.device.[...]"
-"[...]MUI classes are not called by input.device and do not affect 
+"[...]MUI classes are not called by input.device and do not affect
 system performance![...]"*
 Stefan Stuntz, comp.sys.amiga.programmer, 04/09/1993   
 
-*"From a programmers point of view alone, MUI is heaven. Everything is so 
+*"From a programmers point of view alone, MUI is heaven. Everything is so
 much easier than using gadtools. MUI isn't slow, either."*
 Hans-Joerg Frieden, comp.sys.amiga.programmer, 02/04/1994
 
@@ -112,69 +112,69 @@ this attribute, one will rather use a "setColour" method; this method will also 
 by mistake a value "sunny" is being assigned to the "colour" attribute.
 
 Obviously, getter and setter methods would be used to their maximum extend if there was a system
-to hide the attributes of a class from the outside. To this purpose, OOP philosophy offers the 
-chance to define such attributes as "private", i.e. not directly accessible from the outside. 
+to hide the attributes of a class from the outside. To this purpose, OOP philosophy offers the
+chance to define such attributes as "private", i.e. not directly accessible from the outside.
 Obviously, there are also "public" attributes that accessible from outside the class. Again,
 private attributes are not inherited by child classes.
 
 During the process of inheritance, where daughter classes inherit methods from the upper
 classes, you can have problems of inconsistency. For example we may consider the class of
 "birds" with a daughter class "penguins"; this class, respecting the rules of hierarchy,
-will have a "fly" method. But we know that penguins can't fly! This is a typical example of 
+will have a "fly" method. But we know that penguins can't fly! This is a typical example of
 inconsistency in the process of inheritance.
 
 To solve this and other problems it's possible to redefine the behavior of a method that the
 child class has inherited from the mother class, this process is called method "overriding".
 In the above mentioned example, the "fly" method called from a penguin object may have been
 reimplemented in the penguin class such as to behave as if it were called a method for swimming.
-Not all methods of a superclass must be inherited by the subclass; there are private methods which 
+Not all methods of a superclass must be inherited by the subclass; there are private methods which
 can be used only by instances of the class they belong to.
 
-Other classes can be defined inside a class too, either public or private; in the latter case we 
+Other classes can be defined inside a class too, either public or private; in the latter case we
 will have the same behavior described for private attributes.
 
 Finally, all these objects can communicate with each other by exchanging messages.
-A message in this case is the combination of a method to be invoked and a value of the attributes 
+A message in this case is the combination of a method to be invoked and a value of the attributes
 that this method should manipulate.
 Example of a message for an object of the class "dog": method "bark", the value "woof, woof".
 
 ##4.2 BOOPSI and MUI: some history
 
-BOOPSI, Basic Object Oriented Programming System for Intuition, sets the basis for OOP on AmigaOS. 
+BOOPSI, Basic Object Oriented Programming System for Intuition, sets the basis for OOP on AmigaOS.
 The BOOPSI system is developed following a class hierarchy, which are related to a mother class:
 the rootclass. Since its birth, BOOPSI has had a little number of classes which were a bit
-extended with AmigaOS 3.0 (1992). Until then BOOPSI didn't have policies about the layout of 
-graphical objects nor had many classes to offer; also, some concepts about the interaction between 
+extended with AmigaOS 3.0 (1992). Until then BOOPSI didn't have policies about the layout of
+graphical objects nor had many classes to offer; also, some concepts about the interaction between
 classes and font handling were quite laborious, and even the look these classes produced was not top notch.
 
-While the small number of classes and the lack of policies for the positioning of the elements in 
-a window allowed great freedom to the management of the graphics application, not everyone was 
+While the small number of classes and the lack of policies for the positioning of the elements in
+a window allowed great freedom to the management of the graphics application, not everyone was
 willing to support such an effort for the creation of a graphical interface.
 For these reasons, again in 1992, a new solution composed of classes was developed, starting right
 from the rootclass. This solution solved a lot of problems we mentioned, adopting different
 solutions than those proposed by the few BOOPSI official classes.
 
 Such new classes were released with the name of "Magic User Interface": MUI was born.
-During the years, through the long wait for a new version of the operating system, many 
-programmers used MUI as an API to develop their GUI applications, allowing the system to become 
+During the years, through the long wait for a new version of the operating system, many
+programmers used MUI as an API to develop their GUI applications, allowing the system to become
 increasingly robust, comprehensive and versatile.
-In 1995 ClassAct was introduced. It was a new set of "pure" BOOPSI classes, extending the original 
-BOOPSI system following the philosophies of AmigaOS classes. However MUI had already gained 
-the favours of the developers, and the number of applications written using ClassAct never 
+In 1995 ClassAct was introduced. It was a new set of "pure" BOOPSI classes, extending the original
+BOOPSI system following the philosophies of AmigaOS classes. However MUI had already gained
+the favours of the developers, and the number of applications written using ClassAct never
 exceeded those developed with MUI.
-This situation considerably slowed down the development of new ClassAct classes and the debugging 
+This situation considerably slowed down the development of new ClassAct classes and the debugging
 of the classes of this distribution, while at the same time new third party MUI classes were born,
-offering many modern features to programmers and the MUI "core" classes also became increasingly 
+offering many modern features to programmers and the MUI "core" classes also became increasingly
 robust with the release of new versions of the distribution.
 
-In 1999, a new AmigaOS version (3.5) was finally distributed. It officially incorporated a new 
-ClassAct version, called Reaction. However, even this attempt to drive developers towards a more 
-"pure" BOOPSI didn't result in programmers abandon MUI. In 2001, with the release of AmigaOS 3.9 
-which included new Reaction classes, MUI was choosen by MorphOS as its official API for graphical 
+In 1999, a new AmigaOS version (3.5) was finally distributed. It officially incorporated a new
+ClassAct version, called Reaction. However, even this attempt to drive developers towards a more
+"pure" BOOPSI didn't result in programmers abandon MUI. In 2001, with the release of AmigaOS 3.9
+which included new Reaction classes, MUI was choosen by MorphOS as its official API for graphical
 interfaces.
-In 2002 MUI was reimplemented by AROS, and renamed Zune. In 2004, the pre-release version of 
-AmigaOS 4 was released. This operating system sports both the new Reaction classes and an OEM 
-distribution of MUI, providing the programmers with both solutions. In the end, although 
+In 2002 MUI was reimplemented by AROS, and renamed Zune. In 2004, the pre-release version of
+AmigaOS 4 was released. This operating system sports both the new Reaction classes and an OEM
+distribution of MUI, providing the programmers with both solutions. In the end, although
 Reaction classes have been greatly improved and developed in recent times, they are not available
 on AROS and MorphOS and have many missing features and bugs on AmigaOS3.x. They also have not
 the same functionality and robustness of the corresponding MUI classes, and the
@@ -183,9 +183,9 @@ That is why the choice for an Amiga programmer without specific needs is obliged
 
 ## 4.3 BOOPSI programming
 
-In the previous paragraph we mentioned that all BOOPSI classes are related to a single mother 
-class called rootclass. The rootclass defines a set of methods, some of them have to be 
-implemented in the child classes. BOOPSI methods are classified by an identifier, called MethodID. 
+In the previous paragraph we mentioned that all BOOPSI classes are related to a single mother
+class called rootclass. The rootclass defines a set of methods, some of them have to be
+implemented in the child classes. BOOPSI methods are classified by an identifier, called MethodID.
 The "pure" BOOPSI methods that we will discuss are declared in \<intuition/classusr.h>:
 
 - OM_NEW: constructor;
@@ -201,13 +201,13 @@ be invoked and the parameters it accepts. For example, the object packet of the
 OM_NEW and OM_SET methods is the following structure (defined in \<intuition/classusr.h>):
 
 ```c
-struct opSet{
+struct opSet {
 
   STACKED ULONG MethodID;
-  
+
   STACKED struct TagItem *ops_AttrList;
-  
-  STACKED struct GadgetInfo *ops_GInfo; 
+
+  STACKED struct GadgetInfo *ops_GInfo;
 }
 ```
 
@@ -222,9 +222,9 @@ structure defined in \<utility/tagitem.h> like this:
 
 ```c
 struct TagItem {
-  STACKED ULONG ti_Tag;  /* Tag identifier, in other words the name     */ 
+  STACKED ULONG ti_Tag;  /* Tag identifier, in other words the name     */
                          /* of the object's attribute;          		*/
-           
+
   STACKIPTR ti_Data;     /* The value to assign the tag; it's the value */
 						 /* to assign to the object's attribute; 		*/
 }
@@ -233,7 +233,7 @@ struct TagItem {
 It's very common, however, handling more tags at a time and for this reason they are saved
 in an array (called "tag list") before the message is being dispatched.
 
-In practice, an application sends a message to an object using the AmigaOS 
+In practice, an application sends a message to an object using the AmigaOS
 function called DoMethodA(), or its variation DoMethod().
 
 Such functions are declared in \<clib/intuition_protos.h> on OS4, and are called
@@ -244,7 +244,7 @@ is in \<clib/alib_protos.h>. On OS4, however, these functions can be called usin
 If, for example, we want to modify an object attribute, we should write:
 
 ```c
-struct TagItem taglist[] = {{Attribute_ID, Attribute_Value},{TAG_END,0}};
+struct TagItem taglist[] = { {Attribute_ID, Attribute_Value}, {TAG_END,0} };
 struct opSet msg = {OM_SET, taglist, NULL};
 DoMethodA (object, (Msg)&msg);
 ```
@@ -253,18 +253,18 @@ In the first line we create a tagList made by two tags, the first is the
 attribute we want to modify, the second tag is a control attribute closing
 the taglist declaration. In this case we can use both TAG_END or TAG_DONE.
 
-In the second line we build the actual BOOPSI message, made of the MethodID ("OM_SET"), the 
+In the second line we build the actual BOOPSI message, made of the MethodID ("OM_SET"), the
 attribute/value list to be assigned ("taglist") and - last - the third member of the opSet structure that, as we said, must be set to NULL in our case.
 
-In the third line we are simply sending the message to our object. There is a shorter method to do 
+In the third line we are simply sending the message to our object. There is a shorter method to do
 this, using the DoMethodA() variation called DoMethod():
 
 ```c
-struct TagItem taglist[] = {{Attribute_ID, Attribute_Value},{TAG_END,0}};
+struct TagItem taglist[] = { {Attribute_ID, Attribute_Value}, {TAG_END,0} };
 DoMethod(object, OM_SET, taglist, NULL);
 ```
 
-This whole procedure is quite laborious and its use is not recommended in practice. There are 
+This whole procedure is quite laborious and its use is not recommended in practice. There are
 actually some Intuition's functions ready-made to invoke these BOOPSI methods, which take of
 performing the right initializations. Such methods are:
 
@@ -276,7 +276,7 @@ performing the right initializations. Such methods are:
 Let's modify the last example:
 
 ```c
-struct TagItem taglist[] = {{Attribute_ID, Attribute_Value},{TAG_END,0}};
+struct TagItem taglist[] = { {Attribute_ID, Attribute_Value}, {TAG_END,0} };
 DoMethod(object, OM_SET, taglist, NULL);
 ```
 
@@ -286,43 +286,43 @@ which becomes:
 SetAttrs(object, Attribute_ID, Attribute_Value, TAG_END);
 ```
 
-Invoking such functions requires passing the tag in the argument list of the function itself, and 
-this passing mode is called "varargs": a function is variadic when accepts a variable number of 
+Invoking such functions requires passing the tag in the argument list of the function itself, and
+this passing mode is called "varargs": a function is variadic when accepts a variable number of
 arguments.
 
 Handling a variable number of parameters in C language has precise rules,
-(http://publications.gbdirect.co.uk/c_book/chapter9/stdarg.html) which affect the API of all the 
-incarnation of AmigaOS, so we'll talk in more detail this topic later (The relevant SDI include 
-file is SDI_stdarg.h) 
+(http://publications.gbdirect.co.uk/c_book/chapter9/stdarg.html) which affect the API of all the
+incarnation of AmigaOS, so we'll talk in more detail this topic later (The relevant SDI include
+file is SDI_stdarg.h)
 
-Not all methods explained at the start of this paragraph can be applied to every attribute of an 
-object: some attributes are not configurable, not readable or not initializable. To indicate the 
-applicability of a method on an attribute some flags are included in the documentation of a BOOPSI 
+Not all methods explained at the start of this paragraph can be applied to every attribute of an
+object: some attributes are not configurable, not readable or not initializable. To indicate the
+applicability of a method on an attribute some flags are included in the documentation of a BOOPSI
 class:
 
 - I: If present, the attribute can be handled by OM_NEW;
 - S: If present, the attribute can be handled by OM_SET;
 - G: If present, the attribute can be handled by OM_GET;
 
-There are other flags that we've not considered, which refer to methods that we still have not 
+There are other flags that we've not considered, which refer to methods that we still have not
 examinated.
 
 ### 4.3.1 Instantiating a BOOPSI class
 
-As you surely have guessed from the previous paragraph, we must use the Intuition function 
+As you surely have guessed from the previous paragraph, we must use the Intuition function
 NewObject() to instantiate a BOOPSI class; its declaration is the following:
 
 ```c
-APTR NewObject(struct IClass *privateclass, 
-           UBYTE *publicclassID, 
+APTR NewObject(struct IClass *privateclass,
+           UBYTE *publicclassID,
            unsigned long tag1, ...);
 ```          
 
-The first two parameters could be confusing to those who have never used Amiga, so it's time to 
+The first two parameters could be confusing to those who have never used Amiga, so it's time to
 introduce private and public BOOPSI classes.
-A private class in BOOPSI is a class without a name (a simple ASCII value). A private class is 
-*mostly* created by the user to be only employed in his application, while a public class is 
-associated with an ASCII name and so it can also be accessed by other applications beyond the one 
+A private class in BOOPSI is a class without a name (a simple ASCII value). A private class is
+*mostly* created by the user to be only employed in his application, while a public class is
+associated with an ASCII name and so it can also be accessed by other applications beyond the one
 that contains the declaration and implementation.
 
 Let's return to the NewObject() function, if we pass NULL as first
@@ -341,8 +341,8 @@ STRPTR (pointer to string), we will have something like this:
 
 ```c
 Object *objWin; /* Declare a window object */
-objWin = (Object *) NewObject(NULL, "WindowPUB", 
-                   Title, "This is a Window", 
+objWin = (Object *) NewObject(NULL, "WindowPUB",
+                   Title, "This is a Window",
                   TAG_DONE);
 ```                  
 
@@ -351,7 +351,7 @@ We will later include the following call to release the memory used by this BOOP
 ```c
 DisposeObject(objWin);
 ```
- 
+
 The original BOOPSI project stated that for every call to the constructor
 of a class there is sooner or later a call to the destructor
 of the same class. However, with the new classes, manual calls to every
@@ -383,17 +383,17 @@ with a "Label" attribute) to the window object objWin we will do the following:
 
 ```c
 Object *objBut; /* we declare a button object  */
-objBut = (Object *) NewObject(NULL, "ButtonPUB", 
-                Label, "Click me!", 
+objBut = (Object *) NewObject(NULL, "ButtonPUB",
+                Label, "Click me!",
                   TAG_DONE);
 
-DoMethod(objWin, OM_ADDMEMBER, objBut); 
+DoMethod(objWin, OM_ADDMEMBER, objBut);
 ```
 
 Otherwise, if we want to remove that button from the window:
 
 ```c
-DoMethod(objWin, OM_REMMEMBER, objBut); 
+DoMethod(objWin, OM_REMMEMBER, objBut);
 ```
 
 In this last case, we have to be careful when releasing the resources, because
@@ -406,7 +406,7 @@ DisposeObject(objBut);
 ```
 
 
-## 4.4 From BOOPSI to MUI 
+## 4.4 From BOOPSI to MUI
 
 Adding objects to other objects would be an useless feature if such objects
 don't supply functions to the user. A user is not willing to press a button
@@ -417,7 +417,7 @@ of one or more methods. In all these cases we talk about "event notification".
 
 The handling of notifications on "pure" BOOPSI is quite peculiar as it involves two
 methods from the rootclass called OM_UPDATE e OM_MODIFY; we must instantiate two
-child classes of the rootclass called icclass and modelclass and, at the end, we 
+child classes of the rootclass called icclass and modelclass and, at the end, we
 must use the ICA_TARGET and ICA_MAP attributes of these two classes. Moreover,
 there are other implementation details to follow that make this work a bit
 laborious. Moreover, if we want to program following the standard OOP, therefore
@@ -429,10 +429,10 @@ difficulties to implement GUIs that follows a Multiple Document Interface philos
 (MDI), which is based on repeatedly adding and removing graphical objects on the fly.
 This lack of "pure" BOOPSI programming will force you to implementation of GUIs based
 on multiple windows, a philosophy very widespread in the middle of the '90.
-Another problem not easily solvable with "pure" BOOPSI programming is object 
-management focus, more precisely when many graphical objects want to control 
-shortcuts from keyboard in the same GUI. The standard behaviour of "pure" BOOPSI assigns 
-all inputs to the focused object, so if for example a string object doesn't support 
+Another problem not easily solvable with "pure" BOOPSI programming is object
+management focus, more precisely when many graphical objects want to control
+shortcuts from keyboard in the same GUI. The standard behaviour of "pure" BOOPSI assigns
+all inputs to the focused object, so if for example a string object doesn't support
 that kind of keyboard shortcut, the input will not be managed.
 In other words "pure" BOOPSI lacks input inheritance between objects. "Pure" BOOPSI
 programming lacks also drag&drop support between graphical objects of a GUI,
@@ -445,10 +445,10 @@ and hated Amiga Users' GUI, in other words: MUI.
 
 ### 4.4.1 MUI: overview
 
-As already mentioned, MUI is a collection of classes, linked one another following a complex 
-hierarchy that starts from the Notify and Semaphores classes, both children of the rootclass. For 
-the moment we will focus only on the Notify class and all of its subclasses. The Notify class 
-implements a new mechanism to notify events, which is inherited by all its subclasses, 
+As already mentioned, MUI is a collection of classes, linked one another following a complex
+hierarchy that starts from the Notify and Semaphores classes, both children of the rootclass. For
+the moment we will focus only on the Notify class and all of its subclasses. The Notify class
+implements a new mechanism to notify events, which is inherited by all its subclasses,
 following OOP rules. The class hierarchy is shown in the following simple graph:
 
 	 rootclass                    
@@ -459,7 +459,7 @@ following OOP rules. The class hierarchy is shown in the following simple graph:
 	 !  +--Application
 	 !  !           
 	 !  +--Window               
-	 !  !  * 
+	 !  !  *
 	 !  !        
 	 !  +--Area                 
 	 !  !  +--Group
@@ -497,19 +497,19 @@ and MUI_DisposeObject() methods instead of NewObject() and DisposeObject().
 We'll compare their use creating an instance of the MUIC_Window class:
 
 ```c
-objWin = (Object *) NewObject(MUI_GetClass(MUIC_Window), NULL, 
-                                  MUIA_Window_Title, "This is a Window", 
+objWin = (Object *) NewObject(MUI_GetClass(MUIC_Window), NULL,
+                                  MUIA_Window_Title, "This is a Window",
                               TAG_DONE);
 ```                              
 
 becomes:            
 
 ```c
-objWin = (Object *) MUI_NewObject(MUIC_Window, 
-                                      MUIA_Window_Title, "This is a window", 
-                                  TAG_DONE); 
+objWin = (Object *) MUI_NewObject(MUIC_Window,
+                                      MUIA_Window_Title, "This is a window",
+                                  TAG_DONE);
 ```                                  
-            
+
 First of all, we notice that in the first case any MUI class is seen
 as a BOOPSI private class. The instantiation occurs after getting the
 pointer to the MUI class using the MUI_GetClass() method. Such procedure can
@@ -550,9 +550,9 @@ list (therefore there isn't TAG_END or TAG_DONE as last parameter). This is how 
 instantiate a String from the MUIC_String class:
 
 ```c
-Object *string = MUI_NewObject(MUIC_String, 
-									MUIA_Frame, MUIV_Frame_String, 
-                                    MUIA_String_Contents, (IPTR) "Click on the button...", 
+Object *string = MUI_NewObject(MUIC_String,
+									MUIA_Frame, MUIV_Frame_String,
+                                    MUIA_String_Contents, (IPTR) "Click on the button...",
                                 TAG_DONE);
 ```                                
 
@@ -561,7 +561,7 @@ will be put.
 
 As we mentioned, in order to delegate MUI to arrange the gadgets layout we must use the MUIC_Group
 class:
-          
+
 ```c
 Object *group = MUI_NewObject(MUIC_Group,
                                    MUIA_Group_Child, string,
@@ -636,11 +636,11 @@ Object *app = MUI_NewObject(MUIC_Application,
 Object *group = MUI_NewObject(MUIC_Group, TAG_DONE);
 
 
-Object *string = MUI_NewObject(MUIC_String, 
+Object *string = MUI_NewObject(MUIC_String,
                                     MUIA_Frame, MUIV_Frame_String,
                                     MUIA_String_Contents,(IPTR) "Click the button...",
                                 TAG_DONE);
-        
+
 Object *button= MUI_MakeObject(MUIO_Button, "Click me!");
 
 DoMethod(group, OM_ADDMEMBER, string);
@@ -657,7 +657,7 @@ DoMethod(app, OM_ADDMEMBER, window);
 ```
 
 Using this method we can add children objects to other objects after their instantiation.
-If, for example, we want to remove our window from the app object, we will write the following 
+If, for example, we want to remove our window from the app object, we will write the following
 steps:
 
 ```c
@@ -690,15 +690,15 @@ Feel free to decide about the creation and removal of objects according to your 
 
 ## 4.5 MUI: Notifications
 
-In 4.4 we talked about the notification concept. A GUI item can react to a user triggered event, 
+In 4.4 we talked about the notification concept. A GUI item can react to a user triggered event,
 performing an action that can involve other graphical objects.
-Following the example in the previous paragraph, now we want the content of the string and the 
+Following the example in the previous paragraph, now we want the content of the string and the
 button to react when we click the button. To do so, MUI employs the MUIM_Notify method of the
-class with the same name; since almost alla MUI classes are children of MUIC_Notify, all our 
+class with the same name; since almost alla MUI classes are children of MUIC_Notify, all our
 instances can use the MUI notification system.
-MUIM_Notify method can be used with three different techniques: an AmigaOS standard called 
-"callback hook", a notification through methods inside our private classes, or using notificable 
-attributes. For the time being, we will deal with the first technique, we will see the other (more 
+MUIM_Notify method can be used with three different techniques: an AmigaOS standard called
+"callback hook", a notification through methods inside our private classes, or using notificable
+attributes. For the time being, we will deal with the first technique, we will see the other (more
 OOP compliants) later.
 
 ### 4.5.1 MUI: Notifications with callback hook
@@ -713,7 +713,7 @@ in this way:
 
 ```c
 /*Function to hook*/
-HOOKPROTO(NameOfTheFunction, 
+HOOKPROTO(NameOfTheFunction,
           ReturnValue,
           ObjectToHandle,
           ParametersToReceive);
@@ -736,26 +736,26 @@ HOOKPROTONO(hookPutVal, void, APTR *data)
 {
 
   Object *button, *string;
-  
+
   button=(Object *) *data++;
-  string=(Object *) *data; 
-    
-  SetAttrs(string, 
+  string=(Object *) *data;
+
+  SetAttrs(string,
            MUIA_String_Contents,
            (IPTR) "Button clicked!",
            TAG_DONE);
-     
-  SetAttrs(button, 
+
+  SetAttrs(button,
            MUIA_Text_Contents,
            (IPTR) "Clicked!",
            TAG_DONE);
-     
-  SetAttrs(button, 
+
+  SetAttrs(button,
            MUIA_Disabled,
            TRUE,
            TAG_DONE);  
 }
-MakeStaticHook(buttonHook,hookPutVal); 
+MakeStaticHook(buttonHook,hookPutVal);
 ```
 
 As you can see in the function declaration, we are using the "NO" variant
@@ -768,12 +768,12 @@ the address of the first object passed to the function after the hook, we
 cast to (Object *) the pointer. We proceed incrementing the pointer position to
 retrieve the following objects; in this case we only have a button and a string.
 Now we got all the data we need to handle MUI objects: we can proceed to the three SetAttrs()
-calls, the first of them will set the text "Button clicked!" inside our MUIC_String object, the 
+calls, the first of them will set the text "Button clicked!" inside our MUIC_String object, the
 second call changes the text inside the button and the third disables the button.
 The hooking of the function to an object is made by the MUIM_CallHook method, through MUIM_Notify:
 
 ```c
-DoMethod(button,  MUIM_Notify, 
+DoMethod(button,  MUIM_Notify,
                   MUIA_Pressed, FALSE,
                   MUIV_Notify_Self,
                   4,
@@ -810,7 +810,7 @@ arithmetic we previously explained.
 
 The value MUIV_Notify_Self is used to decide whether to trigger the notification method,
 in our case MUIM_CallHook. MUIM_Notify takes these decisions using a predeclared value in
-the MUI system. Generally, a MUI value is identified by the "MUIV_" prefix, in the MUIV_Notify 
+the MUI system. Generally, a MUI value is identified by the "MUIV_" prefix, in the MUIV_Notify
 case we can choose from:
 
 - MUIV_Notify_Self: the object itself on which the MUIM_Notify method is called;
@@ -830,7 +830,7 @@ is handled by the MUIM_Notify method. Following the example in the previous para
 our window object is handled as follows:
 
 ```c
-DoMethod(window, MUIM_Notify, 
+DoMethod(window, MUIM_Notify,
                    MUIA_Window_CloseRequest, TRUE,
                    MUIV_Notify_Application,
                    2,
@@ -839,7 +839,7 @@ DoMethod(window, MUIM_Notify,
 ```                   
 
 We are declaring that when the MUIA_Window_CloseRequester turns to TRUE (the user clicks
-the window close gadget), the method MUIM_Application_ReturnID must be triggered on the 
+the window close gadget), the method MUIM_Application_ReturnID must be triggered on the
 MUIC_Application instance (identified by MUIV_NotifyApplication), passing a
 MUIV_Application_ReturnID_Quit value.
 
@@ -855,7 +855,7 @@ assigns the input controlling to the application itself. Even though in some
 situations this kind of handling can be avoided, using Reaction classes, on
 "pure" BOOPSI a big control cicle is the standard way of handling inputs.
 MUI keeps a similar method for backward compatibility with older applications and
-only to handle the close gadget of the window. More precisely, 
+only to handle the close gadget of the window. More precisely,
 a faster version of MUIM_ApplicationInput is used for this goal, called
 MUIM_Application_NewInput; actually, we will invoke MUIM_Application_ReturnID
 with:
@@ -868,10 +868,10 @@ while (DoMethod(app, MUIM_Application_NewInput, (IPTR)&sigs) != MUIV_Application
 }
 ```
 
-Basically we check that MUIM_Application_NewInput returns a value different in the sigs variable 
-from MUIV_Application_ReturnID_Quit. Otherwise the loop will exit, allowing the application to 
-follow closing operations. Is a common practice to add a check for the interrupt signal CTRL+C 
-inside that loop, in order to catch the CTRL+C signal when the application is launched from the 
+Basically we check that MUIM_Application_NewInput returns a value different in the sigs variable
+from MUIV_Application_ReturnID_Quit. Otherwise the loop will exit, allowing the application to
+follow closing operations. Is a common practice to add a check for the interrupt signal CTRL+C
+inside that loop, in order to catch the CTRL+C signal when the application is launched from the
 command line (the Shell).
 
 ```c
@@ -963,7 +963,7 @@ is the message itself, "opSet" in our example (see paragraph 4.3).
 ### 4.6.1 Implementation of a MUI private class
 
 OOP's strength lies on the possibility to let the programmer write his/her own classes and
-use them again in different contexts. For example, if we would like to subclass MUIC_Group, 
+use them again in different contexts. For example, if we would like to subclass MUIC_Group,
 creating a subclass containing the two objects of paragraph 4.5 (the button and the string),
 first of all we should declare a private data area (a simple struct) of our new class:
 
@@ -1012,7 +1012,7 @@ IPTR myNew(struct IClass *cl,Object *obj,struct opSet *msg)
   .
 
   data = INST_DATA(cl,obj);
-  
+
   .
   .
   .
@@ -1026,7 +1026,7 @@ A function in charge of implementing OM_NEW will always have this signature:
 the message, "msg" is the message. INST_DATA() is a macro used to get a pointer to
 the private data area of the caller object.
 
-The data area of our class is nothing but the struct we declared before and 
+The data area of our class is nothing but the struct we declared before and
 the other superclasses' data areas (polymorphism), if any. Allocation of the superclass
 data area happens when the OM_NEW method of the superclass is invoked. This process
 repeats and goes up until the rootclass.
@@ -1093,7 +1093,7 @@ STRPTR labelStr, labelButton;   /*populate our data area*/
       if (tag->ti_Data)
         labelStr= (STRPTR) tag->ti_Data;
       break;
-      
+
       case MUIA_MUIClassTutorial_LabelBut:
       if (tag->ti_Data)
         labelButton= (STRPTR) tag->ti_Data;
@@ -1154,7 +1154,7 @@ struct TagItem *tags;
 tags=((struct opSet *)msg)->ops_AttrList;
 
 labelStr = (STRPTR) GetTagData(MUIA_MUIClassTutorial_TextStr, (IPTR)NULL, tags);
-      
+
 labelButton = (STRPTR) GetTagData(MUIA_MUIClassTutorial_LabelBut, (IPTR)NULL, tags);      
 ```
 
@@ -1169,16 +1169,16 @@ In order to call the superclass' OM_NEW method we can either use DoSuperMethodA(
 its variadic version DoSuperMethod():
 
 ```c
-struct TagItem taglist[] = {{MUIA_Group_Child, (IPTR) string},
+struct TagItem taglist[] = { {MUIA_Group_Child, (IPTR) string},
                             {MUIA_Group_Child,(IPTR) button},
-                            {TAG_MORE, (IPTR) msg->ops_AttrList}};
+                            {TAG_MORE, (IPTR) msg->ops_AttrList} };
 
-obj =(Object *) DoSuperMethod(cl, 
+obj =(Object *) DoSuperMethod(cl,
                               obj,
                               OM_NEW,
                               taglist,
                               NULL);
-            
+
 if (obj==NULL)
 	return 0;
 ```
@@ -1195,7 +1195,7 @@ Suffice to say for the moment that this function can replace the above code with
 following:
 
 ```c
-obj = DoSuperNew(cl, 
+obj = DoSuperNew(cl,
                  obj,
                  MUIA_Group_Child, string,
                  MUIA_Group_Child, button,
@@ -1257,13 +1257,13 @@ tools, is used by MorphOS to tell a native PPC class from a 68K one; other compi
 will ignore this macro. Using this macro allows us to be compatible with MorphOS.
 
 Now, if the call to MUI_CreateCustomClass() succeded, we should have in "mcc"
-the instance of our private MUI class, to be used as a parameter for the Intuition method 
+the instance of our private MUI class, to be used as a parameter for the Intuition method
 NewObject() as follows:
 
 ```c
-Object *MyObj; 
+Object *MyObj;
 
-MyObj = (Object *) NewObject(mcc->mcc_Class, 
+MyObj = (Object *) NewObject(mcc->mcc_Class,
                              NULL,
                              MUIA_MUIClassTutorial_TextStr,(IPTR) "Click the button...",
                              MUIA_MUIClassTutorial_LabelBut,(IPTR) "ClickMe!",
@@ -1310,7 +1310,7 @@ So, after inserting MUI_CreateCustomClass() in a special function, our code is n
 #if !defined (__amigaos4__)
 #include <clib/alib_protos.h>
 #endif
-                
+
 #include <SDI_compiler.h>
 #include <SDI_hook.h>
 #include <SDI_stdarg.h>
@@ -1339,7 +1339,7 @@ Object * VARARGS68K DoSuperNew(struct IClass *cl, Object *obj, ...);
 #endif
 
 #endif   
-         
+
 /****************************************************************************/
 
 /****************************************************************************/
@@ -1376,10 +1376,10 @@ struct MyData
 HOOKPROTONO(hookPutVal, void,APTR *data)
 {
     Object *bt_1, *str;
-        
+
     bt_1=(Object *) *data++;
     str=(Object *) *data;
-                
+
     SetAttrs(str, MUIA_String_Contents,(IPTR) "Clicked button...", TAG_DONE);
     SetAttrs(bt_1, MUIA_Text_Contents,(IPTR) "Clicked!", TAG_DONE);
     SetAttrs(bt_1, MUIA_Disabled, TRUE, TAG_DONE);    
@@ -1391,7 +1391,7 @@ MakeStaticHook(buttonHook, hookPutVal);
 IPTR mNew(struct IClass *cl, Object *obj, struct opSet *msg)
 {
     struct MyData *data;
-        
+
     STRPTR labelStr, labelButton;
     Object *str, *button;
     struct TagItem *tags;
@@ -1402,14 +1402,14 @@ IPTR mNew(struct IClass *cl, Object *obj, struct opSet *msg)
 
     labelButton= (STRPTR) GetTagData(MUIA_MUIClassTutorial_LabelBut, (IPTR)" ",tags);
 
-        
+
     str = MUI_NewObject(MUIC_String,
                             MUIA_Frame, MUIV_Frame_String,
                             MUIA_String_Contents,(IPTR) labelStr,
                         TAG_DONE);
-        
+
     button= (Object *) MUI_MakeObject(MUIO_Button,(IPTR) labelButton, TAG_DONE);
-                                        
+
     obj = (Object *) DoSuperNew(cl, obj,
                                     MUIA_Group_Child, str,
                                     MUIA_Group_Child, button,
@@ -1432,7 +1432,7 @@ IPTR mNew(struct IClass *cl, Object *obj, struct opSet *msg)
              &buttonHook,
              data->button,
              data->str);
-                         
+
     return (IPTR)obj;
 }
 ///
@@ -1442,7 +1442,7 @@ DISPATCHER(MyDispatcher)
 {
     switch (msg->MethodID)
     {
-        case OM_NEW : 
+        case OM_NEW :
             return mNew(cl,obj,(struct opSet *)msg);
     }
 
@@ -1454,7 +1454,7 @@ struct MUI_CustomClass *initMUIClass()
 {
     return (MUI_CreateCustomClass(NULL, MUIC_Group, NULL, sizeof(struct MyData), ENTRY(MyDispatcher)));
 }
-                                                                                                 
+
 /****************************************************************************/
 
 /****************************************************************************/
@@ -1484,17 +1484,17 @@ struct MUI_CustomClass *mcc;
 void fail(Object *app, STRPTR notice_txt)
 {
     struct EasyStruct requester;
-        
+
     if (app)
         MUI_DisposeObject(app);
 
 #ifdef __amigaos4__
     if (IMUIMaster)
         DropInterface((struct Interface *)IMUIMaster);
-        
+
     if (IIntuition)
         DropInterface((struct Interface *)IIntuition);
-        
+
     if (IUtility)
         DropInterface((struct Interface *)IUtility);
 #endif
@@ -1511,7 +1511,7 @@ void fail(Object *app, STRPTR notice_txt)
 
     requester.es_StructSize = sizeof(struct EasyStruct);
     requester.es_Flags      = 0;
-        
+
     if (notice_txt != NULL)
     {
         requester.es_Title        =  "Startup Error";
@@ -1543,9 +1543,9 @@ void init(void)
     else
     {
     #ifdef __amigaos4__
-        IUtility = (struct UtilityIFace *) GetInterface((struct Library *)UtilityBase, 
-                                "main", 
-                                1, 
+        IUtility = (struct UtilityIFace *) GetInterface((struct Library *)UtilityBase,
+                                "main",
+                                1,
                                 NULL);
     #endif        
     }
@@ -1557,9 +1557,9 @@ void init(void)
     else
     {
         #ifdef __amigaos4__
-        IIntuition = (struct IntuitionIFace *) GetInterface((struct Library *)IntuitionBase, 
-                                        "main", 
-                                        1, 
+        IIntuition = (struct IntuitionIFace *) GetInterface((struct Library *)IntuitionBase,
+                                        "main",
+                                        1,
                                         NULL);
         #endif        
     }
@@ -1571,9 +1571,9 @@ void init(void)
     else
     {
         #ifdef __amigaos4__
-        IMUIMaster = (struct MUIMasterIFace *) GetInterface(MUIMasterBase, 
-                                        "main", 
-                                        1, 
+        IMUIMaster = (struct MUIMasterIFace *) GetInterface(MUIMasterBase,
+                                        "main",
+                                        1,
                                         NULL);
         #endif        
     }    
@@ -1584,7 +1584,7 @@ void init(void)
 int main(int argc,char *argv[])
 {
     Object *MyObj, *window, *app;
-    
+
 
     init();
 
@@ -1605,7 +1605,7 @@ int main(int argc,char *argv[])
                                         MUIA_Window_ID ,MAKE_ID('M','a','i','n'),
                                         MUIA_Window_RootObject, (IPTR) MyObj,
                                       TAG_DONE);
-                                        
+
 
      app = (Object *) MUI_NewObject(MUIC_Application,
                                         MUIA_Application_Title      ,(IPTR)  "MuiPortableClass",
@@ -1616,13 +1616,13 @@ int main(int argc,char *argv[])
                                         MUIA_Application_Base       ,(IPTR)  "MuiPortableClass",
                                         MUIA_Application_Window, (IPTR) window,
                                        TAG_DONE);
-                                        
-     
+
+
 
     if (!app)
         fail(app, "Problem! Failed to create app");
 
-    DoMethod(window, 
+    DoMethod(window,
                 MUIM_Notify,
                 MUIA_Window_CloseRequest,
                 TRUE,
@@ -1631,9 +1631,9 @@ int main(int argc,char *argv[])
                 MUIM_Application_ReturnID,
                 MUIV_Application_ReturnID_Quit);
 
-    
+
     SetAttrs(window, MUIA_Window_Open, TRUE, TAG_DONE);
-                
+
     {/*main loop*/
         IPTR sigs = 0;
         while (DoMethod(app, MUIM_Application_NewInput, &sigs) != MUIV_Application_ReturnID_Quit)
@@ -1679,7 +1679,7 @@ Object * VARARGS68K DoSuperNew(struct IClass *cl, Object *obj, ...)
   VA_END(args);
 
   return rc;
-} 
+}
 ```
 
 The VARARGS68K macro (located in the declaration of the function) finds its origin
@@ -1707,7 +1707,7 @@ to the hook.
 Using hooks implies using the arithmethic of pointers, which can easily lead to
 errors. In order to avoid these issues and respect the OOP paradigm, it is possible
 to manage notifications using public methods belonging to our private class.
-A method belonging to a class will obviously operate with the class private 
+A method belonging to a class will obviously operate with the class private
 data area (the attributes of said class, that is).
 
 It's also good to remind how in the OOP paradigm a class method is invoked through
@@ -1819,8 +1819,8 @@ DoMethod(data->button, MUIM_Notify,
                    MUIM_MUIClassTutorial_ClickBut);
 ```                   
 
-In other words we are using DoMethod() to do the following: "everytime data->button 
-object is selected, invoke the MUIM_MUIClassTutorial_ClickBut method on istance obj of 
+In other words we are using DoMethod() to do the following: "everytime data->button
+object is selected, invoke the MUIM_MUIClassTutorial_ClickBut method on istance obj of
 our private class". This is the resulting code:
 
 ```c
@@ -1867,19 +1867,19 @@ static IPTR mNew(struct IClass *cl,Object *obj,struct opSet *msg)
   STRPTR labelStr, labelButton;
   Object *str, *button;
   struct TagItem *tags =((struct opSet *)msg)->ops_AttrList;
-    
+
   labelStr= (STRPTR) GetTagData(MUIA_MUIClassTutorial_TextStr, (IPTR)" ",tags);
 
   labelButton= (STRPTR) GetTagData(MUIA_MUIClassTutorial_LabelBut, (IPTR)" ",tags);
-      
+
   str = MUI_NewObject(MUIC_String,
-                      MUIA_Frame, MUIV_Frame_String, 
+                      MUIA_Frame, MUIV_Frame_String,
                       MUIA_String_Contents,(IPTR) labelStr,
                       TAG_DONE);
-    
+
   button= (Object *) MUI_MakeObject(MUIO_Button,(IPTR) labelButton, TAG_DONE);
-                    
-  obj = (Object *) DoSuperNew(cl, 
+
+  obj = (Object *) DoSuperNew(cl,
             obj,
             MUIA_Group_Child, str,
             MUIA_Group_Child, button,
@@ -1887,7 +1887,7 @@ static IPTR mNew(struct IClass *cl,Object *obj,struct opSet *msg)
 
   if (obj==NULL)
     return 0;
-    
+
   {
     struct MyData *data;
     data = (struct MyData *) INST_DATA(cl,obj);
@@ -1920,12 +1920,12 @@ static IPTR mClickBut(struct IClass *cl,Object *obj, struct MUIMP_MUIClassTutori
   bt_1=(Object *) data->button;
   str=(Object *)  data->str;
 
- 
+
 
   SetAttrs(str,  MUIA_String_Contents,(IPTR) "Button clicked", TAG_DONE);
   SetAttrs(bt_1, MUIA_Text_Contents,(IPTR) "Clicked!", TAG_DONE);
   SetAttrs(bt_1, MUIA_Disabled,TRUE, TAG_DONE);
- 
+
   return (IPTR) obj;
 }
 ///
@@ -1948,7 +1948,7 @@ DISPATCHER(MyDispatcher)
 ///initMUIClass()
 struct MUI_CustomClass  *initMUIClass()
 {
-  return (struct MUI_CustomClass *) MUI_CreateCustomClass(NULL, MUIC_Group, NULL, 
+  return (struct MUI_CustomClass *) MUI_CreateCustomClass(NULL, MUIC_Group, NULL,
 		sizeof(struct MyData), ENTRY(MyDispatcher));
 
 }
@@ -1964,7 +1964,7 @@ MUI class that we were using, more precisely we are referring to the MUIA_Presse
 attribute.
 We could think that changing a value of any attribute of a MUI class triggers
 our function according to the above mentioned rules, but this is not completely true.
-Actually only some attributes of each of MUI classes can trigger an action everytime 
+Actually only some attributes of each of MUI classes can trigger an action everytime
 their value changes.
 First of all let's explicit a concept we have only silently expressed: an
 attribute is defined "notifiable" when it allows plugging an action on any
@@ -1982,11 +1982,11 @@ struct opGet
   STACKED ULONG  MethodID;      /*OM_GET                             */
   STACKED Tag    opg_AttrID;    /*attribute to be read               */
   STACKED IPTR   *opg_Storage;  /*memory area that contains          */
-                                /*the attribute value requested      */ 
+                                /*the attribute value requested      */
 };
 ```
- 
-The message handling by the Get method of a class is quite easy: the function 
+
+The message handling by the Get method of a class is quite easy: the function
 designated to overload the OM_GET method will simply check if inside opg_AttrID there
 is the ID of an attribute belonging to its own class.
 If the answer is positive, the function will use the opg_Storage memory area,
@@ -2002,7 +2002,7 @@ and most important rule of MUI to obtain an notifiable attribute is to make it r
 Obviously we need our attribute to trigger a notification only if the new value
 is not equal to the current value of the attribute. For example, if our
 attribute's value is TRUE, we don't want to be informed that it is being
-"changed" again to TRUE. In order to do so, there's only to overwrite the ID in the 
+"changed" again to TRUE. In order to do so, there's only to overwrite the ID in the
 ti_Tag field of our attribute's OM_SET message with TAG_IGNORE. This way we will also
 avoid weird situations.
 
@@ -2018,7 +2018,7 @@ representation of these relationship:
 Each of these classes has a private data area which is only known to each other,
 respecting the concept of information hiding. Let's also suppose that each of
 these classes has its own set of attributed and public methods.
-Now we want that when the value of the MUIA_Class1_Attr1 attribute changes to TRUE, 
+Now we want that when the value of the MUIA_Class1_Attr1 attribute changes to TRUE,
 Class2 executes its own MUIM_Class2_Method2 method.
 First of all, concerning Class1 we will have a situation like the following:
 
@@ -2077,12 +2077,12 @@ IPTR SetClass1(struct IClass *cl,Object *obj,struct opSet *msg)
   return DoSuperMethodA(cl,obj,(Msg)msg);
 }
 ....
- 
+
 *******************************************************************************
 ```
 
 In this way the attribute MUIA_Class1_Attr1 notifies its own status change from
-outside Class1. In order to trigger MUIM_Class2_Method2 let's suppose we have 
+outside Class1. In order to trigger MUIM_Class2_Method2 let's suppose we have
 instanced two objects inside Class3, one from Class1 and the other from Class2:
 
 
@@ -2118,7 +2118,7 @@ Let's see the following example of class hierarchy:
 
 Class3 does not know about Class1 since our system respects the incapsulation
 and information hiding paradigm.
-Class2 has an attribute (MUIA_Class2_Attr2) which value can be that of a Class1 
+Class2 has an attribute (MUIA_Class2_Attr2) which value can be that of a Class1
 attribute (MUIA_Class1_Attr1).
 Also, Class3 has an attribute (MUIA_Class3_Attr3) which value can be taken from
 a Class2 attribute (MUIA_Class2_Attr2).
@@ -2210,7 +2210,7 @@ DoMethod(button, MUIM_Notify,
 ```
 
 ### 4.8.3 MUI: warnings about using notified attributes
- 
+
 In paragraph 4.8.2 we have realized a couple of notifications that in some
 way connected three classes to each other:
 
@@ -2230,7 +2230,7 @@ endless loop of the MUI notification facility offered by MUI:
 If we want to overcome this limitation, we should "break" the loop where it
 makes sense: on the one hand, when the value change of MUIA_Class1_Attr1 reaches
 Class3 and, on the other, when the value change of MUIA_Class3_Attr3 reaches
-Class1; after reaching the designated class and setting the destination attribute 
+Class1; after reaching the designated class and setting the destination attribute
 accordingly, both notifications will stop.
 To do so, we should provide a piece of code like the following:
 
@@ -2284,17 +2284,17 @@ In other words, in a situation like the following:
 	(#)                                                                                    (#)
 	 |                                                                                      |
 	 <--MUIA_Class1_Attr1 <-- MUIA_Class2_Attr2 <-- MUIA_Class3_Attr3<-- MUIA_Class4_Attr4<--
- 
-where (#) represents the loop interruption provided by MUIM_NoNotify_Set, MUI automatically 
-breaks the "subloops" that could be generated in between the notifications. To better 
+
+where (#) represents the loop interruption provided by MUIM_NoNotify_Set, MUI automatically
+breaks the "subloops" that could be generated in between the notifications. To better
 understand, in the above situation the following subloop could show up:
 
 	 -->MUIA_Class2_Attr2 --> MUIA_Class3_Attr-->
 	 |                                          |
 	 |                                          |
-	 <--MUIA_Class2_Attr2 --> MUIA_Class3_Attr<-- 
+	 <--MUIA_Class2_Attr2 --> MUIA_Class3_Attr<--
 
-In this case MUI 3.8+ breaks the subloop, preventing any possible unwanted interaction between 
+In this case MUI 3.8+ breaks the subloop, preventing any possible unwanted interaction between
 notifications, without breaking the notification chain.
 
 All this does not happen with Zune. In the latest versions Zune recognizes loops,
@@ -2310,7 +2310,7 @@ our example:
 	(#)                                                                                         (#)
 	 |                                                                                           |
 	 <--MUIA_Class1_Attr1 <-- MUIA_Class2_Attr2_Y <-- MUIA_Class3_Attr3_Y <-- MUIA_Class4_Attr4<--
- 
+
 In this example MUIA_Class2_Attr2_X equals MUIA_Class2_Attr2_Y and MUIA_Class3_Attr3_X equals
 MUIA_Class3_Attr3_Y.
 What is actually needed is to declare new labels that in the OM_SET and OM_GET methods
@@ -2373,18 +2373,18 @@ we can write the following code:
 ```c
 LONG pushIDFoo = 0, pushIDBar= 0;
 
-pushIDFoo = DoMethod(objApp, MUIM_Application_PushMethod, 
-                        objFooClass1, 
-                        3, 
-                        MUIM_Set, 
-                        Class1_AttrA, 
+pushIDFoo = DoMethod(objApp, MUIM_Application_PushMethod,
+                        objFooClass1,
+                        3,
+                        MUIM_Set,
+                        Class1_AttrA,
 						value1);
 
-pushIDBar = DoMethod(objApp, MUIM_Application_PushMethod, 
+pushIDBar = DoMethod(objApp, MUIM_Application_PushMethod,
                         objBarClass1,
-                        3, 
-                        MUIM_Set, 
-                        Class1_AttrB, 
+                        3,
+                        MUIM_Set,
+                        Class1_AttrB,
 						value2);
 ```
 
@@ -2434,26 +2434,26 @@ if (pushIDFoo)
     pushIDFoo = 0;
 }
 
-pushIDFoo = DoMethod(objApp, MUIM_Application_PushMethod, 
+pushIDFoo = DoMethod(objApp, MUIM_Application_PushMethod,
                         objFooClass1,
-                        3, 
-                        MUIM_Set, 
+                        3,
+                        MUIM_Set,
                         Class1_AttrA,
 						value1);
 
 if (pushIDBar)
 {
-    DoMethod(objApp, MUIM_Application_KillPushMethod, 
-              objBarClass1, 
+    DoMethod(objApp, MUIM_Application_KillPushMethod,
+              objBarClass1,
              pushIDBar);
 
     pushIDBar=0;
 }
 
-pushIDBar = DoMethod(objApp, MUIM_Application_PushMethod, 
-                        objBarClass1, 
-                        3, 
-                        MUIM_Set, 
+pushIDBar = DoMethod(objApp, MUIM_Application_PushMethod,
+                        objBarClass1,
+                        3,
+                        MUIM_Set,
                         Class1_AttrB,
 						value2);
 ```						
