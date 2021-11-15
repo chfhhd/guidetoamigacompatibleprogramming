@@ -34,4 +34,4 @@ Artistic License/GPL
 
 --
 
-Amiga® is a trademark of Amiga Inc. Workbench® is a trademark of Cloanto Italia srl. All other trademarks belong to their respective owners.
+All trademarks belong to their respective owners.
